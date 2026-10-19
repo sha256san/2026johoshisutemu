@@ -149,7 +149,7 @@ function getPlanMdSlides() {
           { value: "20%", label: "影響受けたWebトラフィック", color: "#1d9bf0", materialId: "traffic-20pct" },
           { value: "約5.5h", label: "完全復旧までの時間", color: "#17bf63", materialId: "recovery-55h" }
         ],
-        footerNote: "報告日: 2025-11-19 | 発行: システムアーキテクチャ調査室"
+        footerNote: "報告日: 2025-11-19 | ※ タイムライン記載時刻はすべて世界協定時（UTC）表記です（日本時間 JST = UTC+9）"
       }
     },
     {
@@ -222,13 +222,13 @@ function getPlanMdSlides() {
       id: "slide-5",
       topic: "事件発生の原因（DB設定変更）",
       timestamp: "11月18日 20:38",
-      tweetText: "事件の引き金は、障害発生のわずか15分前でした。\n\n【20:05】ClickHouseデータベースのクエリ権限設定を変更。これにより、Bot管理システムが読み込む「フィーチャー設定ファイル」を生成するクエリの挙動が狂ってしまいました…(5/14)\n\n#データベース #設定ミス",
+      tweetText: "事件の引き金は、障害発生のわずか15分前でした。\n\n【11:05 UTC (JST 20:05)】ClickHouseデータベースのクエリ権限設定を変更。これにより、Bot管理システムが読み込む「フィーチャー設定ファイル」を生成するクエリの挙動が狂ってしまいました…(5/14)\n\n#データベース #設定ミス",
       stats: { replies: 27, retweets: "510", likes: "2.1K", views: "48K" },
       slide: {
         badge: "ROOT CAUSE : TRIGGER",
         badgeType: "warning",
-        title: "事件の引き金：20:05 ClickHouse権限変更",
-        subtitle: "定期的な設定更新が、Bot管理用クエリの挙動を変えてしまった",
+        title: "事件の引き金：11:05 UTC ClickHouse権限変更",
+        subtitle: "11:05 UTC (日本時間20:05) の定期更新が、Bot管理用クエリの挙動を変えてしまった",
         themeType: "timeline-detail",
         materialId: "clickhouse-query",
         comparison: {
@@ -292,16 +292,16 @@ function getPlanMdSlides() {
       slide: {
         badge: "TIMELINE & CHAOS",
         badgeType: "warning",
-        title: "タイムラインと混乱：回復と停止を繰り返す怪現象",
-        subtitle: "自動生成と世界同時配信のスピードが調査を難航させた",
+        title: "タイムラインと混乱：回復と停止を繰り返す怪現象 (UTC)",
+        subtitle: "自動生成と世界同時配信のスピードが調査を難航させた（※全時刻 UTC 表記 / JST+9h）",
         themeType: "timeline-horizontal",
         materialId: "flapping-timeline",
         events: [
-          { time: "20:05", title: "ClickHouse変更", desc: "権限更新により重複クエリ発生", status: "start", materialId: "flapping-timeline" },
-          { time: "20:20", title: "コア障害発生", desc: "肥大化ファイル伝播、Frontline停止", status: "danger", materialId: "flapping-timeline" },
-          { time: "21:00頃", title: "断続的ダウン", desc: "正常版と異常版が交互に生成され混乱", status: "warning", materialId: "flapping-timeline" },
-          { time: "23:30", title: "主要トラフィック復旧", desc: "正常版への手動ロールバック完了", status: "success", materialId: "flapping-timeline" },
-          { time: "翌02:06", title: "完全復旧宣言", desc: "全システムの正常稼働を確認", status: "complete", materialId: "flapping-timeline" }
+          { time: "11:05 UTC", title: "ClickHouse変更", desc: "権限更新により重複クエリ発生 (JST 20:05)", status: "start", materialId: "flapping-timeline" },
+          { time: "11:20 UTC", title: "コア障害発生", desc: "肥大化ファイル伝播、Frontline停止 (JST 20:20)", status: "danger", materialId: "flapping-timeline" },
+          { time: "12:00頃 UTC", title: "断続的ダウン", desc: "正常版と異常版が交互に生成され混乱 (JST 21:00頃)", status: "warning", materialId: "flapping-timeline" },
+          { time: "14:30 UTC", title: "主要トラフィック復旧", desc: "正常版への手動ロールバック完了 (JST 23:30)", status: "success", materialId: "flapping-timeline" },
+          { time: "17:06 UTC", title: "完全復旧宣言", desc: "全システムの正常稼働を確認 (JST 翌02:06)", status: "complete", materialId: "flapping-timeline" }
         ]
       }
     },
@@ -353,7 +353,7 @@ function getPlanMdSlides() {
       id: "slide-10",
       topic: "応急対策（一次対応）",
       timestamp: "11月18日 20:48",
-      tweetText: "Cloudflareはどうやって鎮火させたのか？\n\n1. 異常ファイルの自動生成・全社配布を即座に停止\n2. 最後に正常だった既知のファイルを全拠点に手動デプロイ\n3. Frontlineプロキシを強制再起動\n\nこれで23:30頃に主要通信を取り戻しました。(10/14)\n\n#緊急対応 #ロールバック",
+      tweetText: "Cloudflareはどうやって鎮火させたのか？\n\n1. 異常ファイルの自動生成・全社配布を即座に停止\n2. 最後に正常だった既知のファイルを全拠点に手動デプロイ\n3. Frontlineプロキシを強制再起動\n\nこれで14:30 UTC（日本時間23:30頃）に主要通信を取り戻しました。(10/14)\n\n#緊急対応 #ロールバック",
       stats: { replies: 15, retweets: "430", likes: "1.9K", views: "43K" },
       slide: {
         badge: "INCIDENT RESPONSE",
@@ -532,10 +532,10 @@ const SlideMaterials = {
       }
     ],
     keyPoints: [
-      { label: "障害検知〜初動", val: "20:05 DB権限変更 → 20:20 ネットワーク異常急増" },
+      { label: "障害検知〜初動", val: "11:05 UTC (JST 20:05) DB権限変更 → 11:20 UTC (JST 20:20) 異常急増" },
       { label: "最大障害ピーク", val: "Downdetector報告件数 11,230件超（全世界で5xx多発）" },
-      { label: "主要サービス復旧", val: "23:30（発生から約3時間10分でトラフィック正常化）" },
-      { label: "全システム完全正常化", val: "翌02:06（約5時間46分で全エッジ・認証系完全復旧）" }
+      { label: "主要サービス復旧", val: "14:30 UTC / JST 23:30（発生から約3時間10分でトラフィック正常化）" },
+      { label: "全システム完全正常化", val: "17:06 UTC / JST 翌02:06（約5時間46分で全エッジ・認証系完全復旧）" }
     ]
   },
   "error-5xx": {

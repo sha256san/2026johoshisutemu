@@ -502,37 +502,250 @@ class SlideDeckApp {
           `).join('')}
         </div>
       `;
-    } else if (s.points) {
+    } else if (s.statCards) {
+      // Slide 3: 会社規模 - 20%ミニドーナツ + スタッツ
       bodyHtml = `
-        <div class="bullet-points-list">
-          ${s.points.slice(0, 3).map(p => `
-            <div class="bullet-item ${s.materialId ? 'has-material-interactive' : ''}" ${s.materialId ? `data-material-id="${s.materialId}" title="タップして詳細資料を表示"` : ''}>
-              <span>${p.icon}</span>
-              <div><strong>${p.bold}</strong> ${p.text.length > 34 ? p.text.substring(0, 34) + '...' : p.text}</div>
+        <div style="display:flex; align-items:center; gap:14px; background:#ffffff; border:1px solid var(--border-color); border-radius:10px; padding:10px 14px;">
+          <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+            <svg viewBox="0 0 36 36" style="width:42px; height:42px; transform:rotate(-90deg);">
+              <circle cx="18" cy="18" r="15.915" fill="none" stroke="#e1e8ed" stroke-width="3.8"/>
+              <circle cx="18" cy="18" r="15.915" fill="none" stroke="#1d9bf0" stroke-width="3.8" stroke-dasharray="20 80" stroke-linecap="round"/>
+            </svg>
+            <div>
+              <div style="font-weight:900; font-size:1.1rem; color:#1d9bf0; line-height:1;">約 20%</div>
+              <div style="font-size:0.68rem; color:#536471; font-weight:700;">Webトラフィック</div>
             </div>
-          `).join('')}
+          </div>
+          <div style="width:1px; height:32px; background:var(--border-color);"></div>
+          <div style="display:flex; gap:12px; flex:1; justify-content:space-around;">
+            <div>
+              <div style="font-weight:800; font-size:0.95rem; color:#0f1419;">1.02億 /s</div>
+              <div style="font-size:0.68rem; color:#536471;">処理リクエスト</div>
+            </div>
+            <div>
+              <div style="font-weight:800; font-size:0.95rem; color:#0f1419;">335+ 都市</div>
+              <div style="font-size:0.68rem; color:#536471;">125カ国PoP</div>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (s.points) {
+      // Slide 2: エグゼクティブサマリ - 4ステップ・インフォグラフィック
+      bodyHtml = `
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px; background:#f7f9fa; border:1px solid var(--border-color); border-radius:10px; padding:8px 10px;">
+          <div style="text-align:center;">
+            <div style="font-size:0.7rem; font-weight:800; color:#1d9bf0;">1. 発生</div>
+            <div style="font-size:0.74rem; font-weight:700; color:#0f1419;">世界で5xx多発</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:0.7rem; font-weight:800; color:#ffad1f;">2. 原因</div>
+            <div style="font-size:0.74rem; font-weight:700; color:#0f1419;">設定ファイル倍増</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:0.7rem; font-weight:800; color:#f4212e;">3. メカニズム</div>
+            <div style="font-size:0.74rem; font-weight:700; color:#0f1419;">プロキシOOM停止</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:0.7rem; font-weight:800; color:#00ba7c;">4. 復旧</div>
+            <div style="font-size:0.74rem; font-weight:700; color:#0f1419;">ロールバック完了</div>
+          </div>
+        </div>
+      `;
+    } else if (s.flowSteps) {
+      // Slide 4: 処理経路 (Frontline) - GIFサムネイル + ミニパイプライン
+      bodyHtml = `
+        <div class="card-mini-split ${s.materialId ? 'has-material-interactive' : ''}" ${s.materialId ? `data-material-id="${s.materialId}" title="タップして詳細資料を表示"` : ''}>
+          <img src="http_5xx_diagram.gif" alt="5xxエラーメカニズム" class="card-mini-thumb">
+          <div class="card-mini-content">
+            <div style="font-weight: 800; color: #0f1419; margin-bottom: 2px;">エッジプロキシ「Frontline」停止</div>
+            <div style="font-size: 0.76rem; color: #536471;">全通信の玄関口がクラッシュし5xx多発</div>
+            <div class="card-pipeline-steps">
+              <span class="card-pipeline-step">ブラウザ</span>
+              <span style="color:#8b98a5;">&rarr;</span>
+              <span class="card-pipeline-step danger">Frontline 💥</span>
+              <span style="color:#8b98a5;">&rarr;</span>
+              <span class="card-pipeline-step">オリジン</span>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (s.comparison) {
+      // Slide 5: DB設定変更 (ClickHouse) - 正常 vs 異常 比較タグ
+      bodyHtml = `
+        <div class="db-compare-card ${s.materialId ? 'has-material-interactive' : ''}" ${s.materialId ? `data-material-id="${s.materialId}" title="タップしてClickHouse詳細資料を表示"` : ''} style="padding: 10px 14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight: 800; font-size: 0.85rem; color: #0f1419;">ClickHouse 権限変更の出力比較</span>
+            <span style="font-size: 0.72rem; color: #f4212e; font-weight: 800;">行数倍増！</span>
+          </div>
+          <div class="card-compare-tags">
+            <div class="card-compare-tag normal">
+              <strong>通常:</strong> Unique 抽出 (約200行)
+            </div>
+            <div class="card-compare-tag bugged">
+              <strong>変更後:</strong> 重複レコード (400行超)
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (s.boxes && s.themeType === 'vs-card') {
+      // Slide 6: メモリ安全装置 (OOM保護) - ミニゲージ
+      bodyHtml = `
+        <div class="oom-gauge-container ${s.materialId ? 'has-material-interactive' : ''}" ${s.materialId ? `data-material-id="${s.materialId}" title="タップして設定肥大化資料を表示"` : ''} style="padding: 10px 14px; margin-bottom: 0;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight: 800; font-size: 0.82rem; color: #0f1419;">コアプロキシ メモリ安全リミット</span>
+            <span style="background: rgba(244,33,46,0.12); color:#f4212e; font-weight:800; font-size:0.7rem; padding: 2px 6px; border-radius:4px;">LIMIT HIT 💥</span>
+          </div>
+          <div class="oom-meter-track" style="height: 14px; margin: 8px 0 6px;">
+            <div class="oom-meter-fill-normal" style="width: 35%;"></div>
+            <div class="oom-meter-fill-overflow" style="left: 35%; width: 65%;"></div>
+            <div class="oom-threshold-line" style="top: -4px; bottom: -4px;"></div>
+          </div>
+          <div class="oom-labels-row" style="font-size: 0.72rem;">
+            <span style="color: #00ba7c;">通常 200行 (安全域)</span>
+            <span style="color: #f4212e;">400行超 (プロセス強制終了)</span>
+          </div>
         </div>
       `;
     } else if (s.events) {
+      // Slide 7: タイムライン & 二次障害 - shiryou1.png サムネイル + ミニステップ
       bodyHtml = `
-        <div class="timeline-mini-steps">
-          ${s.events.map(ev => `
-            <div class="timeline-mini-step ${ev.status} ${ev.materialId ? 'has-material-interactive' : ''}" ${ev.materialId ? `data-material-id="${ev.materialId}" title="タップしてタイムライン解説資料を表示"` : ''}>
-              <span class="time-tag">${ev.time}</span>
-              <span>${ev.title}</span>
+        <div class="card-mini-split ${s.materialId ? 'has-material-interactive' : ''}" ${s.materialId ? `data-material-id="${s.materialId}" title="タップしてタイムライン解説資料を表示"` : ''}>
+          <img src="shiryou1.png" alt="Downdetector障害推移" class="card-mini-thumb">
+          <div class="card-mini-content">
+            <div style="font-weight: 800; color: #0f1419; margin-bottom: 2px;">Downdetector 1.1万件超スパイク (UTC)</div>
+            <div class="timeline-mini-steps" style="margin-top: 4px;">
+              ${s.events.slice(0, 3).map(ev => `
+                <div class="timeline-mini-step ${ev.status}">
+                  <span class="time-tag">${ev.time}</span>
+                  <span>${ev.title}</span>
+                </div>
+              `).join('')}
             </div>
-          `).join('')}
+          </div>
         </div>
       `;
     } else if (s.services) {
+      // Slide 8: 主要Webサービス被害範囲 - 6社ロゴバー + DOWNバッジ
       bodyHtml = `
-        <div class="stats-grid-row">
-          ${s.services.slice(0, 4).map(srv => `
-            <div class="stat-cell ${s.materialId ? 'has-material-interactive' : ''}" ${s.materialId ? `data-material-id="${s.materialId}" title="タップして影響資料を表示"` : ''}>
-              <img class="service-logo-sm" src="${srv.logo}" alt="${srv.name}">
-              <div class="stat-lbl" style="color: #0f1419; font-weight:700;">${srv.name}</div>
+        <div class="card-services-bar ${s.materialId ? 'has-material-interactive' : ''}" ${s.materialId ? `data-material-id="${s.materialId}" title="タップして影響資料を表示"` : ''}>
+          <div class="card-services-logos">
+            ${s.services.map(srv => `
+              <span class="service-logo-tile" style="width: 36px; height: 36px; border-radius: 8px;" title="${srv.name}">
+                <img class="service-logo" style="width: 20px; height: 20px;" src="${srv.logo}" alt="${srv.name}">
+              </span>
+            `).join('')}
+          </div>
+          <div class="service-status-pulse">
+            <span class="status-dot-blink"></span>
+            <span>HTTP 502/503 DOWN</span>
+          </div>
+        </div>
+      `;
+    } else if (s.rows || s.themeType === 'impact-table') {
+      // Slide 9: 内部被害 - 連鎖ドミノ倒しミニ図解
+      bodyHtml = `
+        <div style="display:flex; align-items:center; justify-content:space-between; background:#ffffff; border:1px solid var(--border-color); border-radius:10px; padding:10px 14px;">
+          <div style="text-align:center;">
+            <div style="font-size:1.1rem;">💥</div>
+            <div style="font-weight:800; font-size:0.75rem; color:#f4212e;">Frontline</div>
+            <div style="font-size:0.68rem; color:#536471;">プロキシ停止</div>
+          </div>
+          <div style="color:#f4212e; font-weight:800; font-size:1rem;">&rarr;</div>
+          <div style="text-align:center;">
+            <div style="font-size:1.1rem;">🔒</div>
+            <div style="font-weight:800; font-size:0.75rem; color:#ffad1f;">Turnstile/KV</div>
+            <div style="font-size:0.68rem; color:#536471;">認証/DB遮断</div>
+          </div>
+          <div style="color:#f4212e; font-weight:800; font-size:1rem;">&rarr;</div>
+          <div style="text-align:center;">
+            <div style="font-size:1.1rem;">❌</div>
+            <div style="font-weight:800; font-size:0.75rem; color:#794bc4;">管理画面/Status</div>
+            <div style="font-size:0.68rem; color:#536471;">共倒れ障害</div>
+          </div>
+        </div>
+      `;
+    } else if (s.steps || s.themeType === 'steps') {
+      // Slide 10: 応急対策 - 3段階オペレーションミニ図解
+      bodyHtml = `
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; background:#ffffff; border:1.5px solid #00ba7c; border-radius:10px; padding:10px 12px;">
+          <div>
+            <span class="cmd-badge">STEP 1</span>
+            <div style="font-weight:800; font-size:0.78rem; color:#0f1419; margin-top:2px;">🛑 配信停止</div>
+          </div>
+          <div>
+            <span class="cmd-badge">STEP 2</span>
+            <div style="font-weight:800; font-size:0.78rem; color:#0f1419; margin-top:2px;">📦 正常版Push</div>
+          </div>
+          <div>
+            <span class="cmd-badge">STEP 3</span>
+            <div style="font-weight:800; font-size:0.78rem; color:#0f1419; margin-top:2px;">🔄 プロキシ再起動</div>
+          </div>
+        </div>
+      `;
+    } else if (s.nodes || s.themeType === 'bypass-diagram') {
+      // Slide 11: 内部迂回処置 - ルーティング分岐ミニ回路図
+      bodyHtml = `
+        <div style="background:#f7f9fa; border:1px solid var(--border-color); border-radius:10px; padding:10px 14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-size:0.74rem; font-weight:700; color:#536471;">トラフィック要求</span>
+            <span style="font-size:0.74rem; font-weight:800; color:#00ba7c;">Workers KV / Access</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(244,33,46,0.06); border:1px solid rgba(244,33,46,0.3); border-radius:6px; padding:3px 8px; font-size:0.72rem;">
+              <span style="color:#f4212e; font-weight:800;">新Frontline (通常経路)</span>
+              <span style="color:#f4212e; font-weight:800;">✖ 停止</span>
             </div>
-          `).join('')}
+            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,186,124,0.08); border:1px solid #00ba7c; border-radius:6px; padding:3px 8px; font-size:0.72rem;">
+              <span style="color:#00ba7c; font-weight:800;">旧プロキシ (迂回バイパス)</span>
+              <span style="color:#00ba7c; font-weight:800;">✔ 稼働継続</span>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (s.principles || s.themeType === 'policy') {
+      // Slide 12: 恒久対策① - CI/CD 検問ゲートウェイミニ図解
+      bodyHtml = `
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; background:#ffffff; border:1.5px solid #1d9bf0; border-radius:10px; padding:10px 12px;">
+          <div style="font-size:0.72rem; font-weight:800; color:#536471;">DB生成</div>
+          <span style="color:#1d9bf0;">&rarr;</span>
+          <div style="background:rgba(29,155,240,0.08); border-radius:6px; padding:3px 6px; text-align:center;">
+            <div style="font-size:0.72rem; font-weight:800; color:#1d9bf0;">🛡️ 3重検問</div>
+            <div style="font-size:0.66rem; color:#536471;">サイズ・重複・ロード</div>
+          </div>
+          <span style="color:#1d9bf0;">&rarr;</span>
+          <div style="font-size:0.72rem; font-weight:800; color:#00ba7c;">世界PoP配信</div>
+        </div>
+      `;
+    } else if ((s.colLeft && s.colRight) || s.themeType === 'two-columns') {
+      // Slide 13: 恒久対策② - キルスイッチ ＋ カナリア展開
+      bodyHtml = `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#ffffff; border:1px solid var(--border-color); border-radius:10px; padding:10px 12px;">
+          <div style="border-left:3px solid #ffad1f; padding-left:8px;">
+            <div style="font-weight:800; font-size:0.78rem; color:#0f1419;">🛑 キルスイッチ</div>
+            <div style="font-size:0.68rem; color:#536471;">異常モジュールを数秒で即遮断</div>
+          </div>
+          <div style="border-left:3px solid #1d9bf0; padding-left:8px;">
+            <div style="font-weight:800; font-size:0.78rem; color:#0f1419;">🎯 カナリアリリース</div>
+            <div style="font-size:0.68rem; color:#536471;">少数PoP検証後に世界展開</div>
+          </div>
+        </div>
+      `;
+    } else if (s.lessons || s.themeType === 'lessons-grid') {
+      // Slide 14: 総括と教訓 - 3大教訓ミニカード
+      bodyHtml = `
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; background:#ffffff; border:1.5px solid #00ba7c; border-radius:10px; padding:10px 12px;">
+          <div style="text-align:center;">
+            <div style="font-weight:900; color:#00ba7c; font-size:0.85rem;">01</div>
+            <div style="font-size:0.7rem; font-weight:800; color:#0f1419;">バタフライ効果</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-weight:900; color:#00ba7c; font-size:0.85rem;">02</div>
+            <div style="font-size:0.7rem; font-weight:800; color:#0f1419;">監視の独立性</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-weight:900; color:#00ba7c; font-size:0.85rem;">03</div>
+            <div style="font-size:0.7rem; font-weight:800; color:#0f1419;">マルチCDN</div>
+          </div>
         </div>
       `;
     } else {
@@ -560,7 +773,10 @@ class SlideDeckApp {
         </div>
         
         <div class="slide-card-footer">
-          <span>Cloudflare Incident Analysis</span>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span>Cloudflare Incident</span>
+            <span style="background: rgba(15, 20, 25, 0.06); padding: 1px 6px; border-radius: 4px; font-size: 0.7rem; color: #536471; font-weight: 700;">時刻: UTC表記</span>
+          </div>
           ${s.materialId ? `<span class="has-material-interactive" data-material-id="${s.materialId}" style="color: #1d9bf0; font-weight: 700; text-decoration: underline;">技術解説資料を見る</span>` : `<span>Slide ${index + 1} of ${this.slidesData.length}</span>`}
         </div>
       </div>
@@ -760,77 +976,137 @@ class SlideDeckApp {
         </div>
       `;
     } else if (s.themeType === 'summary') {
+      // Slide 2: エグゼクティブサマリ - 4ステップ・フロー図 ＋ ハイライト
       visualHtml = `
-        <div class="expanded-points-list">
-          ${s.points.map(p => `
-            <div class="expanded-point-row">
-              <span class="expanded-point-icon">${p.icon}</span>
-              <div><strong style="color:#0f1419">${p.bold}</strong> ${p.text}</div>
-            </div>
-          `).join('')}
-          ${s.highlightBox ? `
-            <div style="background: rgba(29, 155, 240, 0.08); border-left: 5px solid #1d9bf0; padding: 16px 20px; border-radius: 8px; margin-top: 8px;">
-              <div style="font-weight: 800; color: #1d9bf0; margin-bottom: 4px;">${s.highlightBox.title}</div>
-              <div style="font-size: 1.05rem;">${s.highlightBox.text}</div>
-            </div>
-          ` : ''}
+        <div class="summary-flow-grid">
+          <div class="summary-flow-card accent">
+            <span class="summary-flow-step">PHASE 1</span>
+            <div class="summary-flow-title" style="color:#1d9bf0;">11:05 UTC 発生</div>
+            <div class="summary-flow-desc">世界各地でHTTP 5xxエラーが急増し主要Webサービスが一斉ダウン</div>
+          </div>
+          <div class="summary-flow-card danger">
+            <span class="summary-flow-step">PHASE 2</span>
+            <div class="summary-flow-title" style="color:#ffad1f;">ClickHouse 権限</div>
+            <div class="summary-flow-desc">Bot管理用設定ファイルが重複レコードにより想定の2倍以上へ肥大化</div>
+          </div>
+          <div class="summary-flow-card danger">
+            <span class="summary-flow-step">PHASE 3</span>
+            <div class="summary-flow-title" style="color:#f4212e;">Frontline OOM</div>
+            <div class="summary-flow-desc">コアプロキシのメモリ安全装置が作動し世界中のプロセスが強制停止</div>
+          </div>
+          <div class="summary-flow-card success">
+            <span class="summary-flow-step">PHASE 4</span>
+            <div class="summary-flow-title" style="color:#00ba7c;">手動ロールバック</div>
+            <div class="summary-flow-desc">配信停止と正常版への差し替えにより14:30 UTCに主要通信復旧</div>
+          </div>
         </div>
+        ${s.highlightBox ? `
+          <div style="background: rgba(29, 155, 240, 0.08); border-left: 5px solid #1d9bf0; padding: 14px 18px; border-radius: 8px; margin-top: 14px;">
+            <div style="font-weight: 800; color: #1d9bf0; margin-bottom: 2px; font-size: 0.95rem;">${s.highlightBox.title}</div>
+            <div style="font-size: 0.95rem; color: #0f1419; font-weight: 600;">${s.highlightBox.text}</div>
+          </div>
+        ` : ''}
       `;
     } else if (s.themeType === 'stats') {
+      // Slide 3: 会社規模 - 左: 20%ドーナツチャート / 右: 4つのスタッツカード
       visualHtml = `
-        <div class="expanded-metrics-grid" style="grid-template-columns: repeat(4, 1fr);">
-          ${s.statCards.map(c => `
-            <div class="expanded-metric-card ${c.materialId ? 'has-material-interactive' : ''}" ${c.materialId ? `data-material-id="${c.materialId}" title="タッチして資料・解説を表示"` : ''}>
-              <div class="expanded-metric-val" style="font-size: 2.2rem; color: #1d9bf0;">${c.number}</div>
-              <div style="font-size: 0.85rem; font-weight: 800; color: #536471;">${c.unit}</div>
-              <div class="expanded-metric-lbl" style="margin-top: 6px;">${c.label}</div>
-              <div style="font-size: 0.78rem; color: #8b98a5; margin-top: 4px;">${c.desc}</div>
-              ${c.materialId ? `
-                <div class="material-touch-btn-badge" style="margin-top: 8px;">
-                  <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                  <span>詳細資料</span>
-                </div>
-              ` : ''}
+        <div class="scale-visual-container">
+          <div class="share-donut-card ${s.materialId ? 'has-material-interactive' : ''}" ${s.materialId ? `data-material-id="${s.materialId}" title="タッチして会社規模詳細資料を表示"` : ''}>
+            <div style="font-weight: 800; font-size: 0.9rem; color: #536471; margin-bottom: 8px;">世界のWebトラフィックシェア</div>
+            <div style="position: relative; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center;">
+              <svg class="share-donut-svg" viewBox="0 0 160 160">
+                <circle class="share-donut-circle-bg" cx="80" cy="80" r="70"/>
+                <circle class="share-donut-circle-val" cx="80" cy="80" r="70"/>
+              </svg>
+              <div class="donut-inner-text">
+                <div class="donut-big-val">20%</div>
+                <div class="donut-sub-lbl">Web全体の1/5</div>
+              </div>
             </div>
-          `).join('')}
+            <div style="margin-top: 10px; font-size: 0.78rem; color: #536471; line-height: 1.4;">
+              5サイトに1サイトがCloudflare経由で通信
+            </div>
+            ${s.materialId ? '<div class="material-touch-hint" style="margin-top:8px;">規模解説資料</div>' : ''}
+          </div>
+          <div class="expanded-metrics-grid" style="grid-template-columns: repeat(2, 1fr); margin: 0;">
+            ${s.statCards.map(c => `
+              <div class="expanded-metric-card ${c.materialId ? 'has-material-interactive' : ''}" ${c.materialId ? `data-material-id="${c.materialId}" title="タッチして資料・解説を表示"` : ''} style="padding: 16px;">
+                <div class="expanded-metric-val" style="font-size: 1.8rem; color: #1d9bf0;">${c.number}</div>
+                <div style="font-size: 0.8rem; font-weight: 800; color: #536471;">${c.unit}</div>
+                <div class="expanded-metric-lbl" style="margin-top: 4px; font-size: 0.9rem;">${c.label}</div>
+                <div style="font-size: 0.76rem; color: #8b98a5; margin-top: 2px;">${c.desc}</div>
+              </div>
+            `).join('')}
+          </div>
         </div>
       `;
     } else if (s.themeType === 'flowchart') {
+      // Slide 4: 処理経路 (Frontline) - 左右分割 (左: GIFアニメーション / 右: パイプライン)
       visualHtml = `
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 16px 0;">
-          ${s.flowSteps.map((st, i) => `
-            <div class="${st.materialId ? 'has-material-interactive' : ''}" ${st.materialId ? `data-material-id="${st.materialId}" title="タッチしてFrontline詳細資料を表示"` : ''} style="flex: 1; background: ${st.isKey ? 'rgba(244, 33, 46, 0.08)' : '#ffffff'}; border: 2px solid ${st.isKey ? '#f4212e' : '#cfd9de'}; border-radius: 12px; padding: 18px 14px; text-align: center; position: relative;">
-              <div style="font-weight: 800; font-size: 0.85rem; color: #536471; margin-bottom: 6px;">STEP ${st.step}</div>
-              <div style="font-weight: 800; font-size: 1rem; color: ${st.isKey ? '#f4212e' : '#0f1419'}">${st.title}</div>
-              <div style="font-size: 0.8rem; color: #536471; margin-top: 6px;">${st.desc}</div>
-              ${st.isKey ? '<div style="position: absolute; top: -10px; right: 10px; background: #f4212e; color: #fff; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 999px;">障害発生箇所</div>' : ''}
-              ${st.materialId ? '<div class="material-touch-hint" style="margin-top:8px;">資料解説</div>' : ''}
+        <div class="expanded-visual-split">
+          <div class="split-media-panel danger-glow ${s.materialId ? 'has-material-interactive' : ''}" ${s.materialId ? `data-material-id="${s.materialId}" title="タップして詳細資料を表示"` : ''}>
+            <div class="split-media-badge">
+              <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+              <span>アニメーション解説図</span>
             </div>
-            ${i < s.flowSteps.length - 1 ? '<div style="font-size: 1.5rem; color: #8b98a5;">&rarr;</div>' : ''}
-          `).join('')}
-        </div>
-        <div style="background: rgba(255, 173, 31, 0.12); padding: 12px 18px; border-radius: 8px; font-weight: 600; color: #9c6500; font-size: 0.95rem;">
-          ${s.callout}
+            <img src="http_5xx_diagram.gif" alt="HTTP 5xxエラー発生メカニズム" class="split-media-img">
+            <div class="split-media-caption">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#1d9bf0;"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+              <span>図: リクエスト遮断と500/502/503エラー返却のメカニズム</span>
+            </div>
+          </div>
+          <div class="split-content-panel">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              ${s.flowSteps.map((st, i) => `
+                <div class="${st.materialId ? 'has-material-interactive' : ''}" ${st.materialId ? `data-material-id="${st.materialId}" title="タッチしてFrontline詳細資料を表示"` : ''} style="background: ${st.isKey ? 'rgba(244, 33, 46, 0.08)' : '#ffffff'}; border: 2px solid ${st.isKey ? '#f4212e' : '#cfd9de'}; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: relative;">
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-weight: 800; font-size: 0.8rem; background: ${st.isKey ? '#f4212e' : '#536471'}; color: #fff; padding: 2px 8px; border-radius: 6px;">STEP ${st.step}</span>
+                    <div>
+                      <div style="font-weight: 800; font-size: 0.95rem; color: ${st.isKey ? '#f4212e' : '#0f1419'}">${st.title}</div>
+                      <div style="font-size: 0.78rem; color: #536471;">${st.desc}</div>
+                    </div>
+                  </div>
+                  ${st.isKey ? '<span style="background: #f4212e; color: #fff; font-size: 0.65rem; font-weight: 800; padding: 3px 8px; border-radius: 999px;">障害発生箇所 💥</span>' : ''}
+                </div>
+              `).join('')}
+            </div>
+            <div style="background: rgba(255, 173, 31, 0.12); padding: 10px 14px; border-radius: 8px; font-weight: 600; color: #9c6500; font-size: 0.88rem; border-left: 4px solid #ffad1f;">
+              ${s.callout}
+            </div>
+          </div>
         </div>
       `;
     } else if (s.themeType === 'timeline-detail') {
+      // Slide 5: DB設定変更 (ClickHouse) - スキーマ比較 + テーブル風図解
       visualHtml = `
         <div class="expanded-comparison-grid">
-          <div class="comparison-column normal">
+          <div class="db-compare-card">
             <div class="col-header">
-              <h4>${s.comparison.before.title}</h4>
+              <h4 style="font-size: 1.1rem; font-weight: 800;">${s.comparison.before.title}</h4>
               <span class="col-header-badge green">${s.comparison.before.badge}</span>
             </div>
-            <ul style="display: flex; flex-direction: column; gap: 10px; font-size: 0.95rem; padding-left: 20px;">
+            <div class="db-table-preview">
+              <div style="color: #00ba7c; font-weight: 700; margin-bottom: 4px;">-- SQL Query (Unique)</div>
+              <div class="db-table-row"><span>feature_id_101</span><span>[Unique OK]</span></div>
+              <div class="db-table-row"><span>feature_id_102</span><span>[Unique OK]</span></div>
+              <div class="db-table-row" style="color: #00ba7c; font-weight: 700;"><span>Total Output:</span><span>~200 行 (正常)</span></div>
+            </div>
+            <ul style="display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; padding-left: 18px; margin-top: 12px;">
               ${s.comparison.before.items.map(it => `<li>${it}</li>`).join('')}
             </ul>
           </div>
-          <div class="comparison-column bugged ${s.materialId ? 'has-material-interactive' : ''}" ${s.materialId ? `data-material-id="${s.materialId}" title="タッチしてClickHouse詳細資料を表示"` : ''}>
+          <div class="db-compare-card bugged ${s.materialId ? 'has-material-interactive' : ''}" ${s.materialId ? `data-material-id="${s.materialId}" title="タッチしてClickHouse詳細資料を表示"` : ''}>
             <div class="col-header">
-              <h4>${s.comparison.after.title}</h4>
+              <h4 style="font-size: 1.1rem; font-weight: 800; color: #f4212e;">${s.comparison.after.title}</h4>
               <span class="col-header-badge red">${s.comparison.after.badge}</span>
             </div>
-            <ul style="display: flex; flex-direction: column; gap: 10px; font-size: 0.95rem; padding-left: 20px; color: #f4212e;">
+            <div class="db-table-preview">
+              <div style="color: #f4212e; font-weight: 700; margin-bottom: 4px;">-- SQL Query (Duplicate)</div>
+              <div class="db-table-row duplicate"><span>feature_id_101</span><span>[DUPLICATE !]</span></div>
+              <div class="db-table-row duplicate"><span>feature_id_101</span><span>[DUPLICATE !]</span></div>
+              <div class="db-table-row" style="color: #f4212e; font-weight: 800;"><span>Total Output:</span><span>400+ 行 (2倍肥大化)</span></div>
+            </div>
+            <ul style="display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; padding-left: 18px; color: #f4212e; margin-top: 12px;">
               ${s.comparison.after.items.map(it => `<li><strong>${it}</strong></li>`).join('')}
             </ul>
             ${s.materialId ? '<div class="material-touch-btn-badge" style="margin-top:12px;"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span>ClickHouse権限バグの詳細資料を表示</span></div>' : ''}
@@ -838,149 +1114,321 @@ class SlideDeckApp {
         </div>
       `;
     } else if (s.themeType === 'vs-card') {
+      // Slide 6: メモリ安全装置 (OOM保護) - プログレスバーゲージ + 2カラムボックス
       visualHtml = `
+        <div class="oom-gauge-container">
+          <div class="oom-gauge-header">
+            <div class="oom-gauge-title">
+              <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:#f4212e;"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+              <span>コアプロキシ Frontline メモリ安全リミット（OOM保護メーター）</span>
+            </div>
+            <span style="background: rgba(244,33,46,0.12); color:#f4212e; font-weight:800; font-size:0.78rem; padding: 4px 10px; border-radius:999px;">SIGSEGV / PANIC 発動！</span>
+          </div>
+          <div class="oom-meter-track">
+            <div class="oom-meter-fill-normal"></div>
+            <div class="oom-threshold-line">
+              <span class="oom-threshold-label">安全上限（約200行）</span>
+            </div>
+            <div class="oom-meter-fill-overflow"></div>
+          </div>
+          <div class="oom-labels-row">
+            <span style="color: #00ba7c;">通常使用量: 35% (安定稼働)</span>
+            <span style="color: #f4212e; font-weight: 800;">障害時: 200% 超過（メモリ保護が作動しプロセス強制停止）</span>
+          </div>
+        </div>
+
         <div class="expanded-comparison-grid">
           ${s.boxes.map(b => `
-            <div class="${b.materialId ? 'has-material-interactive' : ''}" ${b.materialId ? `data-material-id="${b.materialId}" title="タッチして設定肥大化メカニズム資料を表示"` : ''} style="background: #ffffff; border: 2px solid #cfd9de; border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h4 style="font-size: 1.25rem; font-weight: 800;">${b.title}</h4>
-                <span style="background: rgba(244, 33, 46, 0.12); color: #f4212e; font-weight: 800; font-size: 0.8rem; padding: 4px 10px; border-radius: 999px;">${b.status}</span>
+            <div class="${b.materialId ? 'has-material-interactive' : ''}" ${b.materialId ? `data-material-id="${b.materialId}" title="タッチして設定肥大化メカニズム資料を表示"` : ''} style="background: #ffffff; border: 2px solid #cfd9de; border-radius: 16px; padding: 18px 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h4 style="font-size: 1.15rem; font-weight: 800;">${b.title}</h4>
+                <span style="background: rgba(244, 33, 46, 0.12); color: #f4212e; font-weight: 800; font-size: 0.76rem; padding: 3px 8px; border-radius: 999px;">${b.status}</span>
               </div>
-              <p style="font-size: 1.05rem; line-height: 1.6; color: #536471;">${b.desc}</p>
-              ${b.materialId ? '<div class="material-touch-hint" style="margin-top:10px;">資料解説</div>' : ''}
+              <p style="font-size: 0.95rem; line-height: 1.5; color: #536471;">${b.desc}</p>
+              ${b.materialId ? '<div class="material-touch-hint" style="margin-top:8px;">資料解説</div>' : ''}
             </div>
           `).join('')}
         </div>
-        <div style="margin-top: 20px; font-size: 1.05rem; font-weight: 700; color: #0f1419; text-align: center;">
+        <div style="margin-top: 14px; font-size: 0.92rem; font-weight: 700; color: #536471; text-align: center;">
           ${s.footerSummary}
         </div>
       `;
     } else if (s.themeType === 'timeline-horizontal') {
+      // Slide 7: タイムライン & 二次障害 - 左右分割 (左: shiryou1.png / 右: フラッピングとステップ)
       visualHtml = `
-        <div class="expanded-timeline-row">
-          ${s.events.map(ev => `
-            <div class="expanded-timeline-node ${ev.status} ${ev.materialId ? 'has-material-interactive' : ''}" ${ev.materialId ? `data-material-id="${ev.materialId}" title="タッチしてタイムライン解説資料を表示"` : ''}>
-              <div class="node-time">${ev.time}</div>
-              <div class="node-title">${ev.title}</div>
-              <div class="node-desc">${ev.desc}</div>
-              ${ev.materialId ? '<div class="material-touch-hint" style="margin-top:4px;">資料解説</div>' : ''}
+        <div class="expanded-visual-split">
+          <div class="split-media-panel ${s.materialId ? 'has-material-interactive' : ''}" ${s.materialId ? `data-material-id="${s.materialId}" title="タッチして障害推移資料を表示"` : ''}>
+            <div class="split-media-badge">
+              <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z"/></svg>
+              <span>実測推移グラフ（資料1）</span>
             </div>
-          `).join('')}
+            <img src="shiryou1.png" alt="Downdetector障害推移" class="split-media-img">
+            <div class="split-media-caption">
+              <span>Downdetector報告数: 最大11,230件のピークと復旧推移</span>
+            </div>
+          </div>
+          <div class="split-content-panel">
+            <div style="background: rgba(255, 173, 31, 0.1); border-left: 4px solid #ffad1f; padding: 10px 14px; border-radius: 8px;">
+              <div style="font-weight: 800; font-size: 0.9rem; color: #9c6500; margin-bottom: 2px;">5分周期の「フラッピング現象」</div>
+              <div style="font-size: 0.78rem; color: #536471;">設定ファイルが5分毎に自動生成され、正常（回復）と異常（ダウン）が交互に切り替わり初動を混乱させた。</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              ${s.events.map(ev => `
+                <div class="expanded-timeline-node ${ev.status} ${ev.materialId ? 'has-material-interactive' : ''}" ${ev.materialId ? `data-material-id="${ev.materialId}" title="タッチしてタイムライン解説資料を表示"` : ''} style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="node-time" style="margin: 0; font-size: 0.78rem;">${ev.time}</span>
+                    <span class="node-title" style="margin: 0; font-size: 0.9rem;">${ev.title}</span>
+                  </div>
+                  <span style="font-size: 0.75rem; color: #536471;">${ev.desc}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
         </div>
       `;
     } else if (s.themeType === 'grid-services') {
+      // Slide 8: 主要Webサービス被害範囲 - サービス死活監視モニター風グリッド
       visualHtml = `
-        <div class="expanded-services-grid">
+        <div class="service-monitor-grid">
           ${s.services.map(srv => `
-            <div class="service-card">
-              <span class="service-logo-tile"><img class="service-logo" src="${srv.logo}" alt="${srv.name}"></span>
+            <div class="service-monitor-card">
+              <div class="service-monitor-header">
+                <span class="service-logo-tile"><img class="service-logo" src="${srv.logo}" alt="${srv.name}"></span>
+                <div class="service-status-pulse">
+                  <span class="status-dot-blink"></span>
+                  <span>HTTP 502/503 DOWN</span>
+                </div>
+              </div>
               <div>
-                <div class="service-name">${srv.name}</div>
-                <div class="service-desc">${srv.impact}</div>
+                <div class="service-name" style="font-size: 1.1rem; margin-bottom: 4px;">${srv.name}</div>
+                <div class="service-desc" style="font-size: 0.85rem; line-height: 1.4;">${srv.impact}</div>
               </div>
             </div>
           `).join('')}
         </div>
       `;
     } else if (s.themeType === 'impact-table') {
+      // Slide 9: 内部被害 - 連鎖ドミノ倒し相関図
       visualHtml = `
-        <div class="expanded-table-container">
-          <table class="expanded-table">
-            <thead>
-              <tr>
-                <th style="width: 32%;">サービス / 機能</th>
-                <th>影響内容</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${s.rows.map(r => `
-                <tr class="${r.materialId ? 'has-material-interactive' : ''}" ${r.materialId ? `data-material-id="${r.materialId}" title="タッチして内部サービス影響資料を表示"` : ''}>
-                  <td><strong style="color:#0f1419;">${r.service}</strong></td>
-                  <td style="color:#536471;">${r.impact}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
+        <div class="cascade-diagram-grid ${s.materialId ? 'has-material-interactive' : ''}" ${s.materialId ? `data-material-id="${s.materialId}" title="タッチして内部サービス影響資料を表示"` : ''}>
+          <div class="cascade-step-box danger-root">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-weight:900; color:#f4212e; font-size:0.8rem;">第1波：トリガー</span>
+              <span style="font-size:1.2rem;">💥</span>
+            </div>
+            <h4 style="font-size:1.1rem; font-weight:800; color:#f4212e;">コアプロキシ Frontline</h4>
+            <div style="font-size:0.82rem; color:#536471; line-height:1.4;">
+              肥大化した設定ファイルのロードでメモリ安全装置が作動しプロセス強制停止。
+            </div>
+            <div style="font-size:0.75rem; background:rgba(244,33,46,0.1); color:#f4212e; font-weight:700; padding:4px 8px; border-radius:4px; margin-top:4px;">
+              影響: HTTP 500 / 502 急増
+            </div>
+          </div>
+
+          <div class="cascade-connector-arrow">
+            <span>&rarr;</span>
+            <span class="cascade-connector-label">連鎖遮断</span>
+          </div>
+
+          <div class="cascade-step-box warning-mid">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-weight:900; color:#ffad1f; font-size:0.8rem;">第2波：基幹機能</span>
+              <span style="font-size:1.2rem;">🔒</span>
+            </div>
+            <h4 style="font-size:1.1rem; font-weight:800; color:#0f1419;">Turnstile & Workers KV</h4>
+            <div style="font-size:0.82rem; color:#536471; line-height:1.4;">
+              フロントエンドゲートウェイ要求が5xxとなり、認証（CAPTCHA）と分散ストレージが全面停止。
+            </div>
+            <div style="font-size:0.75rem; background:rgba(255,173,31,0.1); color:#9c6500; font-weight:700; padding:4px 8px; border-radius:4px; margin-top:4px;">
+              影響: 外部サイトでログイン不可
+            </div>
+          </div>
+
+          <div class="cascade-connector-arrow">
+            <span>&rarr;</span>
+            <span class="cascade-connector-label">共倒れ</span>
+          </div>
+
+          <div class="cascade-step-box lockout-end">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-weight:900; color:#794bc4; font-size:0.8rem;">第3波：運用不能</span>
+              <span style="font-size:1.2rem;">❌</span>
+            </div>
+            <h4 style="font-size:1.1rem; font-weight:800; color:#794bc4;">管理画面 & ステータス</h4>
+            <div style="font-size:0.82rem; color:#536471; line-height:1.4;">
+              認証障害とアクセス集中により管理者自身もログイン不能に。ステータスページもダウン。
+            </div>
+            <div style="font-size:0.75rem; background:rgba(121,75,196,0.1); color:#794bc4; font-weight:700; padding:4px 8px; border-radius:4px; margin-top:4px;">
+              影響: 初動確認・広報が難航
+            </div>
+          </div>
         </div>
+        ${s.materialId ? '<div class="material-touch-btn-badge" style="margin-top:14px;"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span>内部サービス影響の詳細資料を表示</span></div>' : ''}
       `;
     } else if (s.themeType === 'steps') {
+      // Slide 10: 応急対策 - 3段階オペレーションコマンド図
       visualHtml = `
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+        <div class="emergency-cmd-grid">
           ${s.steps.map(step => `
-            <div class="${step.materialId ? 'has-material-interactive' : ''}" ${step.materialId ? `data-material-id="${step.materialId}" title="タッチして緊急ロールバック手順資料を表示"` : ''} style="background: #ffffff; border: 2px solid #00ba7c; border-radius: 16px; padding: 22px; position: relative;">
-              <span style="background: #00ba7c; color: #fff; font-weight: 800; font-size: 0.75rem; padding: 4px 10px; border-radius: 999px; position: absolute; top: -12px; left: 20px;">${step.num}</span>
-              <h4 style="font-size: 1.15rem; font-weight: 800; margin-top: 8px; margin-bottom: 8px;">${step.title}</h4>
-              <p style="font-size: 0.95rem; color: #536471; line-height: 1.5;">${step.desc}</p>
-              ${step.materialId ? '<div class="material-touch-hint" style="margin-top:8px;">手順資料解説</div>' : ''}
+            <div class="emergency-cmd-card ${step.materialId ? 'has-material-interactive' : ''}" ${step.materialId ? `data-material-id="${step.materialId}" title="タッチして緊急ロールバック手順資料を表示"` : ''}>
+              <span class="cmd-badge">${step.num}</span>
+              <h4 style="font-size:1.1rem; font-weight:800; color:#0f1419;">${step.title}</h4>
+              <div class="cmd-action-box">
+                <span style="color:#00ba7c;">$</span>
+                <span>${step.num === 'STEP 1' ? 'kill pipeline_job; stop_propagation' : step.num === 'STEP 2' ? 'deploy --force safe_200lines' : 'systemctl restart frontline --gradual'}</span>
+              </div>
+              <p style="font-size:0.88rem; color:#536471; line-height:1.5;">${step.desc}</p>
+              ${step.materialId ? '<div class="material-touch-hint" style="margin-top:auto;">手順資料解説</div>' : ''}
             </div>
           `).join('')}
         </div>
       `;
     } else if (s.themeType === 'bypass-diagram') {
+      // Slide 11: 内部迂回処置 - ルーティング分岐回路図
       visualHtml = `
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 16px;">
-          ${s.nodes.map(n => `
-            <div style="background: #ffffff; border: 2px solid ${n.status === 'failed' ? '#f4212e' : '#1d9bf0'}; border-radius: 12px; padding: 18px 12px; text-align: center;">
-              <div style="font-size: 2rem; margin-bottom: 6px;">${n.icon}</div>
-              <div style="font-weight: 800; font-size: 0.95rem;">${n.name}</div>
-              <div style="font-size: 0.8rem; margin-top: 4px; font-weight: 600; color: ${n.status === 'failed' ? '#f4212e' : '#00ba7c'}">${n.note}</div>
+        <div class="bypass-circuit-wrapper">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-weight:800; font-size:1.05rem; color:#0f1419;">基幹サービス向け 緊急迂回フェイルオーバー回路</div>
+            <span style="font-size:0.75rem; background:rgba(0,186,124,0.12); color:#00ba7c; font-weight:800; padding:3px 10px; border-radius:999px;">セッション全滅を回避</span>
+          </div>
+
+          <div class="bypass-routes-container">
+            <div class="bypass-route-row failed">
+              <div class="route-status-icon failed">✖</div>
+              <div style="flex:1;">
+                <div style="font-weight:800; font-size:0.95rem; color:#f4212e;">新プロキシ Frontline（通常経路）</div>
+                <div style="font-size:0.8rem; color:#536471;">肥大化した設定ファイルのロードによりメモリ安全装置で停止中</div>
+              </div>
+              <span style="font-size:0.75rem; font-weight:800; color:#f4212e; background:#ffffff; padding:4px 8px; border-radius:6px; border:1px solid #f4212e;">通信遮断</span>
             </div>
-          `).join('')}
-        </div>
-        <div style="background: rgba(29, 155, 240, 0.08); padding: 12px 18px; border-radius: 8px; font-size: 0.95rem; font-weight: 600;">
-          ${s.lesson}
+
+            <div class="bypass-route-row active">
+              <div class="route-status-icon active">✔</div>
+              <div style="flex:1;">
+                <div style="font-weight:800; font-size:0.95rem; color:#00ba7c;">旧プロキシ（緊急迂回バイパスルート）</div>
+                <div style="font-size:0.8rem; color:#536471;">安定版の旧世代プロキシへトラフィックを即座にリルート</div>
+              </div>
+              <span style="font-size:0.75rem; font-weight:800; color:#00ba7c; background:#ffffff; padding:4px 8px; border-radius:6px; border:1px solid #00ba7c;">Workers KV / Access 救済</span>
+            </div>
+          </div>
+
+          <div style="margin-top:14px; background:rgba(29,155,240,0.06); border-left:4px solid #1d9bf0; padding:10px 14px; border-radius:6px; font-size:0.88rem; color:#0f1419; font-weight:600;">
+            ${s.lesson}
+          </div>
         </div>
       `;
     } else if (s.themeType === 'policy') {
+      // Slide 12: 恒久対策① - CI/CD ゲートキーパー検問所図解
       visualHtml = `
-        <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div class="gatekeeper-flow">
+          <div class="gate-node" style="border-color:#536471;">
+            <div style="font-size:1.5rem;">🗄️</div>
+            <div style="font-weight:800; font-size:0.88rem;">ClickHouse</div>
+            <span class="gate-badge-pill" style="color:#536471; background:#f0f3f4;">自動生成</span>
+          </div>
+
+          <div style="color:#1d9bf0; font-size:1.2rem; font-weight:800;">&rarr;</div>
+
+          <div class="gate-node shield">
+            <div style="font-size:1.5rem;">🛡️</div>
+            <div style="font-weight:800; font-size:0.88rem;">検問 01</div>
+            <div style="font-size:0.75rem; color:#536471;">行数＆サイズ上限</div>
+            <span class="gate-badge-pill">上限約200行</span>
+          </div>
+
+          <div style="color:#1d9bf0; font-size:1.2rem; font-weight:800;">&rarr;</div>
+
+          <div class="gate-node shield">
+            <div style="font-size:1.5rem;">🛡️</div>
+            <div style="font-weight:800; font-size:0.88rem;">検問 02</div>
+            <div style="font-size:0.75rem; color:#536471;">重複レコード排除</div>
+            <span class="gate-badge-pill">二重検証</span>
+          </div>
+
+          <div style="color:#1d9bf0; font-size:1.2rem; font-weight:800;">&rarr;</div>
+
+          <div class="gate-node shield">
+            <div style="font-size:1.5rem;">🛡️</div>
+            <div style="font-weight:800; font-size:0.88rem;">検問 03</div>
+            <div style="font-size:0.75rem; color:#536471;">ダミーロード試験</div>
+            <span class="gate-badge-pill">OOM事前検査</span>
+          </div>
+
+          <div style="color:#1d9bf0; font-size:1.2rem; font-weight:800;">&rarr;</div>
+
+          <div class="gate-node endpoint">
+            <div style="font-size:1.5rem;">🌐</div>
+            <div style="font-weight:800; font-size:0.88rem; color:#00ba7c;">世界配信</div>
+            <span class="gate-badge-pill" style="color:#00ba7c; background:rgba(0,186,124,0.1);">335都市PoP</span>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:16px;">
           ${s.principles.map((pr, i) => `
-            <div style="display: flex; align-items: flex-start; gap: 16px; background: #ffffff; border: 1px solid #cfd9de; border-radius: 12px; padding: 16px 20px;">
-              <span style="background: #1d9bf0; color: #fff; font-weight: 800; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">0${i+1}</span>
-              <div>
-                <h4 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 4px;">${pr.title}</h4>
-                <p style="font-size: 0.95rem; color: #536471;">${pr.desc}</p>
-              </div>
+            <div style="background:#ffffff; border:1px solid var(--border-color); border-radius:10px; padding:12px; box-shadow:var(--shadow-sm);">
+              <h4 style="font-size:0.95rem; font-weight:800; color:#1d9bf0; margin-bottom:4px;">0${i+1}. ${pr.title}</h4>
+              <p style="font-size:0.82rem; color:#536471; line-height:1.4;">${pr.desc}</p>
             </div>
           `).join('')}
         </div>
       `;
     } else if (s.themeType === 'two-columns') {
+      // Slide 13: 恒久対策② - キルスイッチ ＋ カナリア展開
       visualHtml = `
-        <div class="expanded-comparison-grid">
-          <div style="background: #ffffff; border: 2px solid #cfd9de; border-radius: 16px; padding: 22px;">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-              <span style="font-size: 1.5rem;">${s.colLeft.icon}</span>
-              <h4 style="font-size: 1.2rem; font-weight: 800;">${s.colLeft.title}</h4>
+        <div class="defense-tactic-split">
+          <div class="tactic-column-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h4 style="font-size:1.15rem; font-weight:800; color:#0f1419;">${s.colLeft.title}</h4>
+              <span style="font-size:0.75rem; font-weight:800; color:#ffad1f; background:rgba(255,173,31,0.12); padding:3px 8px; border-radius:999px;">${s.colLeft.tag}</span>
             </div>
-            <ul style="display: flex; flex-direction: column; gap: 8px; font-size: 0.95rem; padding-left: 20px; color: #536471;">
+            <div class="tactic-diagram-box">
+              <span style="font-size:0.8rem; font-weight:700;">本体プロキシ (Frontline)</span>
+              <span style="color:#ffad1f; font-weight:900;">⚡ 切離し ⚡</span>
+              <span style="font-size:0.8rem; font-weight:700; color:#f4212e;">異常Botモジュール</span>
+            </div>
+            <ul style="display:flex; flex-direction:column; gap:8px; font-size:0.9rem; padding-left:18px; color:#536471;">
               ${s.colLeft.bullets.map(b => `<li>${b}</li>`).join('')}
             </ul>
           </div>
-          <div style="background: #ffffff; border: 2px solid #cfd9de; border-radius: 16px; padding: 22px;">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-              <span style="font-size: 1.5rem;">${s.colRight.icon}</span>
-              <h4 style="font-size: 1.2rem; font-weight: 800;">${s.colRight.title}</h4>
+
+          <div class="tactic-column-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h4 style="font-size:1.15rem; font-weight:800; color:#0f1419;">${s.colRight.title}</h4>
+              <span style="font-size:0.75rem; font-weight:800; color:#1d9bf0; background:rgba(29,155,240,0.12); padding:3px 8px; border-radius:999px;">${s.colRight.tag}</span>
             </div>
-            <ul style="display: flex; flex-direction: column; gap: 8px; font-size: 0.95rem; padding-left: 20px; color: #536471;">
+            <div class="tactic-diagram-box">
+              <span style="font-size:0.75rem; font-weight:700;">1〜2 PoP (カナリア)</span>
+              <span style="color:#1d9bf0;">&rarr;</span>
+              <span style="font-size:0.75rem; font-weight:700;">10% 展開</span>
+              <span style="color:#1d9bf0;">&rarr;</span>
+              <span style="font-size:0.75rem; font-weight:700; color:#00ba7c;">全335都市</span>
+            </div>
+            <ul style="display:flex; flex-direction:column; gap:8px; font-size:0.9rem; padding-left:18px; color:#536471;">
               ${s.colRight.bullets.map(b => `<li>${b}</li>`).join('')}
             </ul>
           </div>
         </div>
       `;
     } else if (s.themeType === 'lessons-grid') {
+      // Slide 14: 総括と教訓 - 3大教訓アーキテクチャ図解カード
       visualHtml = `
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px;">
+        <div class="lessons-infographic-grid">
           ${s.lessons.map(ls => `
-            <div class="${ls.materialId ? 'has-material-interactive' : ''}" ${ls.materialId ? `data-material-id="${ls.materialId}" title="タッチしてSRE教訓詳細資料を表示"` : ''} style="background: #ffffff; border: 2px solid #00ba7c; border-radius: 14px; padding: 20px;">
-              <div style="font-size: 1.8rem; font-weight: 900; color: #00ba7c; margin-bottom: 4px;">${ls.num}</div>
-              <h4 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px;">${ls.title}</h4>
-              <p style="font-size: 0.88rem; color: #536471; line-height: 1.5;">${ls.text}</p>
-              ${ls.materialId ? '<div class="material-touch-hint" style="margin-top:8px;">教訓解説</div>' : ''}
+            <div class="lesson-infographic-card ${ls.materialId ? 'has-material-interactive' : ''}" ${ls.materialId ? `data-material-id="${ls.materialId}" title="タッチしてSRE教訓詳細資料を表示"` : ''}>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:1.6rem; font-weight:900; color:#00ba7c;">${ls.num}</span>
+                <span style="font-size:1.2rem;">${ls.num === '01' ? '🦋' : ls.num === '02' ? '☁️' : '🌐'}</span>
+              </div>
+              <h4 style="font-size:1.05rem; font-weight:800; color:#0f1419; margin-bottom:2px;">${ls.title}</h4>
+              <div class="lesson-diagram-mini">
+                ${ls.num === '01' ? '小変更 (DB権限) ➔ 全体停止 💥' : ls.num === '02' ? '自社インフラ ⚡ 別系統Status 🛡️' : 'Client ➔ CDN A / CDN B (多重化)'}
+              </div>
+              <p style="font-size:0.85rem; color:#536471; line-height:1.45;">${ls.text}</p>
+              ${ls.materialId ? '<div class="material-touch-hint" style="margin-top:auto;">教訓解説資料</div>' : ''}
             </div>
           `).join('')}
         </div>
-        <div style="text-align: center; font-weight: 700; color: #1d9bf0; font-size: 1.05rem;">
+        <div style="text-align: center; font-weight: 700; color: #1d9bf0; font-size: 0.95rem; margin-top: 14px;">
           ${s.finalThank}
         </div>
       `;
@@ -1009,7 +1457,10 @@ class SlideDeckApp {
         </div>
         
         <div class="expanded-footer-bar">
-          <span>Cloudflare Post-Mortem Slide Deck</span>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span>Cloudflare Post-Mortem Slide Deck</span>
+            <span style="background: rgba(15, 20, 25, 0.06); padding: 2px 8px; border-radius: 4px; font-size: 0.74rem; color: #536471; font-weight: 700;">※ 記載時刻はすべて世界協定時（UTC）表記です（日本時間 JST = UTC+9）</span>
+          </div>
           <span>Slide ${index + 1} of ${this.slidesData.length}</span>
         </div>
       </div>
