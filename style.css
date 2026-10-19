@@ -240,21 +240,39 @@ html, body {
 /* 'もっと見る' Dropdown Menu */
 .more-options-dropdown {
   position: absolute;
-  bottom: 50px;
-  left: 10px;
-  width: 250px;
+  top: -80px;
+  left: calc(100% + 10px);
+  width: 310px;
+  max-height: 85vh;
+  overflow-y: auto;
   background: #ffffff;
   border-radius: 16px;
-  box-shadow: rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px;
+  box-shadow: rgba(101, 119, 134, 0.25) 0px 0px 22px, rgba(101, 119, 134, 0.15) 0px 0px 4px 1px;
   padding: 8px 0;
   display: none;
   flex-direction: column;
-  z-index: 100;
+  z-index: 1000;
+  scrollbar-width: thin;
 }
 
 .more-options-dropdown.show {
   display: flex;
   animation: modalScaleUp 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dropdown-header-label {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #536471;
+  padding: 6px 16px 2px 16px;
+  letter-spacing: 0.02em;
+}
+
+.dropdown-toc-list {
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 2px 8px;
+  scrollbar-width: thin;
 }
 
 .dropdown-item {

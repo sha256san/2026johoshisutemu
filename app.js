@@ -329,6 +329,7 @@ class SlideDeckApp {
         <span class="toc-status-icon">${idx === 0 ? '●' : '○'}</span>
       `;
       item.addEventListener('click', () => {
+        if (this.moreOptionsDropdown) this.moreOptionsDropdown.classList.remove('show');
         this.revealUpToIndex(idx);
         this.scrollToSlide(idx);
         this.openModalForSlide(idx);
@@ -1724,12 +1725,18 @@ class SlideDeckApp {
 
     // すべて展開
     if (this.btnExpandAll) {
-      this.btnExpandAll.addEventListener('click', () => this.expandAllSlides());
+      this.btnExpandAll.addEventListener('click', () => {
+        if (this.moreOptionsDropdown) this.moreOptionsDropdown.classList.remove('show');
+        this.expandAllSlides();
+      });
     }
 
     // 最初からやり直し
     if (this.btnReset) {
-      this.btnReset.addEventListener('click', () => this.resetTimeline());
+      this.btnReset.addEventListener('click', () => {
+        if (this.moreOptionsDropdown) this.moreOptionsDropdown.classList.remove('show');
+        this.resetTimeline();
+      });
     }
 
     // スライド（全画面表示モード）

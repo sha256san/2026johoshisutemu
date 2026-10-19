@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cloudflare大規模障害 調査報告 | Twitterスライドスレッド</title>
   <meta name="description" content="2025年11月18日 Cloudflare大規模障害の技術的原因と教訓をTwitter風タイムラインとスライドで解説">
-  <link rel="stylesheet" href="style.css?v=18">
+  <link rel="stylesheet" href="style.css?v=19">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -68,21 +68,37 @@
               </div>
             </button>
 
-            <!-- ドロップダウンメニュー -->
+            <!-- ドロップダウンメニュー（スライド操作パネル ＆ 目次を内包） -->
             <div class="more-options-dropdown" id="moreOptionsDropdown">
-              <button class="dropdown-item" id="dropResetTl">
-                <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+              <!-- スライド操作パネル -->
+              <div class="dropdown-header-label">スライド操作パネル</div>
+              <button class="dropdown-item" id="btnExpandAll">
+                <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                <span>全スレッドを一括展開</span>
+              </button>
+              <button class="dropdown-item" id="btnReset">
+                <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
                 <span>タイムラインをリセット</span>
               </button>
-              <button class="dropdown-item" id="dropExpandAll">
-                <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                <span>全14スライドを一括展開</span>
-              </button>
+
+              <div class="dropdown-divider"></div>
+
+              <!-- 目次 (1テーマ1スライド) -->
+              <div style="display:flex; justify-content:space-between; align-items:center; padding: 6px 16px 4px 16px;">
+                <span class="dropdown-header-label" style="padding:0;">目次 (1テーマ1スライド)</span>
+                <span style="font-size:0.7rem; color:#1d9bf0; font-weight:700;">クリックで表示</span>
+              </div>
+              <div class="slide-toc-list dropdown-toc-list" id="slideTocList">
+                <!-- Dynamic TOC items -->
+              </div>
+
+              <div class="dropdown-divider"></div>
+
+              <!-- その他ツール -->
               <button class="dropdown-item" id="dropReloadMd">
                 <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
                 <span>plan.md を再読込</span>
               </button>
-              <div class="dropdown-divider"></div>
               <div class="dropdown-hint">
                 <span>ショートカット: [Space/N] 返信, [←/→] スライド移動</span>
               </div>
@@ -204,31 +220,6 @@
         <input type="text" class="twitter-search-input" placeholder="キーワードでスライドを検索...">
       </div>
 
-      <!-- Slide Deck Controls -->
-      <section class="right-panel-section">
-        <h3 class="section-title">スライド操作パネル</h3>
-        <div class="controls-grid">
-          <button class="widget-btn primary" id="btnExpandAll">
-            <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            <span>全スレッドを一括展開</span>
-          </button>
-          <button class="widget-btn" id="btnReset">
-            <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-            <span>タイムラインをリセット</span>
-          </button>
-        </div>
-      </section>
-
-      <!-- Slide TOC Navigator -->
-      <section class="right-panel-section">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-          <h3 class="section-title" style="margin-bottom:0;">目次 (1テーマ1スライド)</h3>
-          <span style="font-size:0.75rem; color:#1d9bf0; font-weight:700;">クリックで表示</span>
-        </div>
-        <div class="slide-toc-list" id="slideTocList">
-          <!-- Dynamic TOC items -->
-        </div>
-      </section>
 
       <!-- Twitter Trends for You Section -->
       <section class="right-panel-section">
@@ -362,7 +353,7 @@
   </div>
 
   <!-- Scripts -->
-  <script src="parser.js?v=18"></script>
-  <script src="app.js?v=18"></script>
+  <script src="parser.js?v=19"></script>
+  <script src="app.js?v=19"></script>
 </body>
 </html>
