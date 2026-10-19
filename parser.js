@@ -485,19 +485,19 @@ function getPlanMdSlides() {
             num: "01",
             title: "微細な変更のバタフライ効果",
             text: "機械学習やBot制御など外部データ依存モジュールは、入力変動に対する耐障害性を常にテストすべし。",
-            materialId: "sre-lessons"
+            materialId: "sre-lesson-1"
           },
           {
             num: "02",
             title: "監視インフラの完全独立性",
             text: "自社サービスが全滅した時でもユーザーに状況を伝えるため、ステータスページは別クラウド・別DNSでホストすべし。",
-            materialId: "sre-lessons"
+            materialId: "sre-lesson-2"
           },
           {
             num: "03",
             title: "ユーザー側の多重化・DR対策",
             text: "単一のCDNや認証基盤への過度な依存を避け、緊急時のキャッシュ代替やマルチCDN検討が必要。",
-            materialId: "sre-lessons"
+            materialId: "sre-lesson-3"
           }
         ],
         finalThank: "スレッドをお読みいただきありがとうございました。知見の共有をお願いします。"
@@ -761,28 +761,362 @@ const SlideMaterials = {
       { label: "ステータスページ", val: "自社インフラ依存による共倒れダウンが発生" }
     ]
   },
-  "sre-lessons": {
-    badge: "SRE運用教訓資料",
-    badgeType: "primary",
-    title: "SRE・大規模分散インフラが学ぶべき3大教訓",
-    subtitle: "ステータスインフラの完全独立、内部生成ファイルの厳格検証、機能単位キルスイッチ",
+  "sre-lesson-1": {
+    badge: "教訓01 詳細図解資料",
+    badgeType: "warning",
+    title: "教訓1：内部生成データへの「ゼロトラスト検証」とバタフライ効果の遮断",
+    subtitle: "「社内バッチだから安全」という盲点の排除と、CI/CD検問ゲートによる肥大化自動ブロック",
     sections: [
       {
-        heading: "1. 監視・ステータスインフラの「完全独立性」",
-        text: "障害を伝えるためのインフラ（ステータスページ、アラート発信システム、顧客連絡窓口）は、自社が提供するCDN・DNS・プロキシから完全に切り離された「別クラウド・別ドメイン」で運用しなければなりません。Cloudflareはこの教訓を受け、ステータス基盤の完全外部化をコミットしました。"
-      },
-      {
-        heading: "2. 内部生成データへの「ゼロトラスト・バリデーション」",
+        heading: "1. 【CI/CD検問所】ファイル自動配信パイプラインの遮断ゲート",
+        diagramHtml: `
+          <div class="diagram-pipeline-flow">
+            <div class="pipeline-node">
+              <div class="pipeline-node-icon">🗄️</div>
+              <div class="pipeline-node-title">ClickHouse</div>
+              <div class="pipeline-node-desc">クエリ出力 (400行重複)</div>
+            </div>
+            <div class="pipeline-connector">➔</div>
+            <div class="pipeline-node gatekeeper">
+              <div class="pipeline-node-icon">🔍</div>
+              <div class="pipeline-node-title">CI/CD検問ゲート</div>
+              <div class="pipeline-node-desc">行数・スキーマ自動検証</div>
+            </div>
+            <div class="pipeline-connector blocked-cross">⛔ 遮断!</div>
+            <div class="pipeline-node blocked">
+              <div class="pipeline-node-icon">🛑</div>
+              <div class="pipeline-node-title">Quicksilver停止</div>
+              <div class="pipeline-node-desc">世界同期パイプライン即時キル</div>
+            </div>
+            <div class="pipeline-connector">🛡️</div>
+            <div class="pipeline-node protected">
+              <div class="pipeline-node-icon">🌐</div>
+              <div class="pipeline-node-title">335都市エッジ保護</div>
+              <div class="pipeline-node-desc">クラッシュ 0台で完全防衛</div>
+            </div>
+          </div>
+        `,
         text: "「社内の自動化バッチが生成したファイルだから安全だろう」という暗黙の仮定は最大の落とし穴です。外部からの入力と同様に、内部生成ファイルに対してもスキーマ検証、行数制限、ロードテストを自動実行するゲートキーパーの導入が不可欠です。"
       },
       {
-        heading: "3. 秒速で機能を切り離す「キルスイッチ」の常設",
-        text: "Bot管理のような付加価値機能の異常によって、通信本体のプロキシが道連れでクラッシュしてはなりません。異常を検知した瞬間に機能単体を数秒でバイパスできるキルスイッチ機構をアーキテクチャの必須要件とする必要があります。"
+        heading: "2. 【メーター比較】特徴量ファイルサイズと安全ガードレール境界線",
+        diagramHtml: `
+          <div class="diagram-meter-container">
+            <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700;">
+              <span style="color:#00ba7c;">🟢 正常範囲 (約60項目/180行)</span>
+              <span style="color:#0f1419;">⚠️ 限界上限 (200行)</span>
+              <span style="color:#f4212e;">💥 異常超過 (400行/222%)</span>
+            </div>
+            <div class="meter-track-wrapper">
+              <div class="meter-fill-normal"></div>
+              <div class="meter-fill-over"></div>
+              <div class="meter-limit-line"></div>
+              <div class="meter-limit-label">OOM保護リミット境界</div>
+            </div>
+            <div style="font-size:0.75rem; color:#536471; text-align:right;">
+              ※ 境界線を超えた瞬間にメモリ安全装置（SIGSEGV）が全台で一斉発動
+            </div>
+          </div>
+        `,
+        text: "Frontlineプロキシ内部に許容配列上限がハードコードされていたため、事前検証のない肥大化ファイルは全台一斉クラッシュの引き金となりました。"
+      },
+      {
+        heading: "3. 【段階展開】超高速一括同期から「カナリアリリース」への転換",
+        diagramHtml: `
+          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; text-align:center;">
+            <div style="background:#f7f9fa; border:1px solid #cfd9de; border-radius:8px; padding:10px;">
+              <div style="font-size:0.75rem; font-weight:800; color:#536471;">STEP 1</div>
+              <div style="font-size:1.1rem; margin:2px 0;">🧪 1〜2 PoP</div>
+              <div style="font-size:0.72rem; color:#0f1419; font-weight:700;">カナリア試験展開</div>
+              <div style="font-size:0.68rem; color:#00ba7c; margin-top:2px;">異常時は即停止</div>
+            </div>
+            <div style="background:#f7f9fa; border:1px solid #cfd9de; border-radius:8px; padding:10px;">
+              <div style="font-size:0.75rem; font-weight:800; color:#536471;">STEP 2</div>
+              <div style="font-size:1.1rem; margin:2px 0;">📈 10% PoP</div>
+              <div style="font-size:0.72rem; color:#0f1419; font-weight:700;">段階的トラフィック検証</div>
+              <div style="font-size:0.68rem; color:#536471; margin-top:2px;">メトリクス監視</div>
+            </div>
+            <div style="background:#e8f5e9; border:1.5px solid #00ba7c; border-radius:8px; padding:10px;">
+              <div style="font-size:0.75rem; font-weight:800; color:#00ba7c;">STEP 3</div>
+              <div style="font-size:1.1rem; margin:2px 0;">🌍 全335都市</div>
+              <div style="font-size:0.72rem; color:#0f1419; font-weight:800;">全世界フル展開</div>
+              <div style="font-size:0.68rem; color:#00ba7c; margin-top:2px;">安全確認完了後</div>
+            </div>
+          </div>
+        `,
+        text: "数分での全世界一斉同期は強みである反面、毒入り設定ファイルが一瞬で世界中にばら撒かれるリスクと表裏一体です。"
       }
     ],
     keyPoints: [
-      { label: "教訓1: 監視の独立", val: "ステータスページは自社インフラ外の独立環境でホスト" },
-      { label: "教訓2: 内部ゼロトラスト", val: "自動生成設定ファイルも厳格なサイズ・スキーマ検証を実施" },
+      { label: "内部ゼロトラスト", val: "社内自動生成ファイルに対してもスキーマ・行数・安全境界の厳格検証を実施" },
+      { label: "ガードレール設計", val: "プログラム側の上限値と設定ファイル生成側のリミットを一致させる" },
+      { label: "カナリア展開", val: "全社一括配布を撤廃し、小規模PoPでの段階的リリースを必須化" }
+    ]
+  },
+  "sre-lesson-2": {
+    badge: "教訓02 詳細図解資料",
+    badgeType: "primary",
+    title: "教訓2：監視・ステータスインフラの「完全独立性」",
+    subtitle: "ステータスページ共倒れの撲滅と、自社インフラ外マルチクラウド運用アーキテクチャ",
+    sections: [
+      {
+        heading: "1. 【Before vs After 構成図】ステータスページ共倒れ vs 外部独立ホスティング",
+        diagramHtml: `
+          <div class="diagram-compare-container">
+            <div class="compare-box before">
+              <div class="compare-box-header">
+                <span class="compare-box-title">❌ Before（自社インフラ依存）</span>
+                <span class="compare-box-badge">共倒れ停止</span>
+              </div>
+              <div class="compare-flow">
+                <div class="compare-step-node"><span>ユーザーアクセス</span><span>📱/💻</span></div>
+                <div class="compare-arrow-down">⬇️</div>
+                <div class="compare-step-node"><span>status.cloudflare.com</span><span>DNS</span></div>
+                <div class="compare-arrow-down">⬇️</div>
+                <div class="compare-step-node" style="border-color:#f4212e; background:#fff0f0; color:#f4212e;"><span>自社Cloudflareエッジ</span><span>💥 障害中</span></div>
+                <div class="compare-result-pill">500エラー（閲覧不可・盲目）</div>
+              </div>
+            </div>
+
+            <div class="compare-box after">
+              <div class="compare-box-header">
+                <span class="compare-box-title">🛡️ After（完全独立マルチクラウド）</span>
+                <span class="compare-box-badge">100% 稼働</span>
+              </div>
+              <div class="compare-flow">
+                <div class="compare-step-node"><span>ユーザーアクセス</span><span>📱/💻</span></div>
+                <div class="compare-arrow-down">⬇️</div>
+                <div class="compare-step-node"><span>独立DNS (Route53等)</span><span>別系統</span></div>
+                <div class="compare-arrow-down">⬇️</div>
+                <div class="compare-step-node" style="border-color:#00ba7c; background:#e8f5e9; color:#00ba7c; font-weight:800;"><span>外部クラウド (AWS/GCP/Fastly)</span><span>🟢 常時稼働</span></div>
+                <div class="compare-result-pill">200 OK（障害状況をリアルタイム発信）</div>
+              </div>
+            </div>
+          </div>
+        `,
+        text: "障害を伝えるためのインフラ（ステータスページ、アラート発信システム、顧客連絡窓口）は、自社が提供するCDN・DNS・プロキシから完全に切り離された「別クラウド・別ドメイン」で運用しなければなりません。"
+      },
+      {
+        heading: "2. 【グラフ比較】障害発生時のステータス到達率と情報遮断リスク",
+        diagramHtml: `
+          <div class="diagram-barchart-container">
+            <div class="barchart-item">
+              <div class="barchart-label-row">
+                <span>自社ネットワーク依存時（今回のCloudflare）</span>
+                <span style="color:#f4212e; font-weight:900;">0% （全面ダウン・閲覧不可）</span>
+              </div>
+              <div class="barchart-track">
+                <div class="barchart-fill danger" style="width: 5%;">0%</div>
+              </div>
+            </div>
+
+            <div class="barchart-item">
+              <div class="barchart-label-row">
+                <span>外部独立クラウド運用（AWS / GCP / 外部SaaS）</span>
+                <span style="color:#00ba7c; font-weight:900;">99.99% （障害中も常時到達）</span>
+              </div>
+              <div class="barchart-track">
+                <div class="barchart-fill success" style="width: 100%;">99.99%</div>
+              </div>
+            </div>
+          </div>
+        `,
+        text: "ステータスページの停止は、ユーザーの憶測やSNS上での混乱を爆発させ、障害復旧への初動体制を大幅に遅延させます。"
+      },
+      {
+        heading: "3. 【外形監視フロー】自社を経由しない独立アラート発信ライン",
+        diagramHtml: `
+          <div style="background:#0f1419; color:#fff; border-radius:10px; padding:14px; font-size:0.8rem; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:6px;">
+              <span style="font-weight:800; color:#00ba7c;">独立外形監視エージェント (全世界20箇所)</span>
+              <span style="font-size:0.7rem; background:#00ba7c; color:#fff; padding:1px 6px; border-radius:4px;">Datadog / Pingdom</span>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin:4px 0;">
+              <span style="background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">エッジ異常検知 (5xx多発)</span>
+              <span style="color:#00ba7c; font-weight:900;">➔ [独立API] ➔</span>
+              <span style="background:#00ba7c; color:#fff; font-weight:800; padding:4px 8px; border-radius:4px;">外部ステータスページ更新</span>
+              <span style="color:#00ba7c; font-weight:900;">➔</span>
+              <span style="background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">全ユーザーへ即時通知</span>
+            </div>
+            <div style="font-size:0.7rem; color:#8b98a5; text-align:center;">Cloudflare本体のネットワークが完全に全滅していても、通知システムは1秒も止まらない。</div>
+          </div>
+        `,
+        text: "自社ネットワークが停止した非常時にも、外形監視から直接外部ステータスページを更新できる自律的通知経路を整備します。"
+      }
+    ],
+    keyPoints: [
+      { label: "監視の独立", val: "ステータスページは自社インフラ外の独立環境（AWS/GCP）でホスト" },
+      { label: "DNS独立性", val: "自社権威DNSではなく、外部の独立DNSプロバイダを利用" },
+      { label: "共倒れ防止", val: "社内認証や管理ダッシュボードのバックドア緊急アクセス回線を確保" }
+    ]
+  },
+  "sre-lesson-3": {
+    badge: "教訓03 詳細図解資料",
+    badgeType: "success",
+    title: "教訓3：機能単位の瞬時キルスイッチ ＆ 利用者側マルチCDN多重化",
+    subtitle: "プロキシ共倒れを防ぐ緊急バイパス回路と、顧客側DR（災害復旧）設計",
+    sections: [
+      {
+        heading: "1. 【緊急バイパス回路図】Bot管理異常を切り離す瞬時キルスイッチ",
+        diagramHtml: `
+          <div class="diagram-circuit-container">
+            <div class="circuit-path-row normal">
+              <span class="circuit-tag red">通常経路（障害時）</span>
+              <div class="circuit-nodes">
+                <span>パケット流入</span>
+                <span>➔</span>
+                <span>Frontline</span>
+                <span>➔</span>
+                <span style="background:#f4212e; padding:2px 6px; border-radius:4px;">Bot判定 [クラッシュ💥]</span>
+                <span>➔</span>
+                <span style="color:#f4212e;">全通信道連れ遮断 (5xx)</span>
+              </div>
+            </div>
+
+            <div class="circuit-path-row bypass">
+              <span class="circuit-tag green">キルスイッチ作動（安全）</span>
+              <div class="circuit-nodes">
+                <span>パケット流入</span>
+                <span>➔</span>
+                <span>Frontline</span>
+                <span>➔</span>
+                <span style="background:#00ba7c; padding:2px 6px; border-radius:4px;">⚡ バイパス迂回ライン</span>
+                <span>➔</span>
+                <span style="color:#00ba7c; font-weight:800;">Pingoraキャッシュ / オリジン到達 (100% 継続 🚀)</span>
+              </div>
+            </div>
+          </div>
+        `,
+        text: "Bot管理のような付加価値機能の異常によって、通信本体のプロキシが道連れでクラッシュしてはなりません。異常を検知した瞬間に機能単体を数秒でバイパスできるキルスイッチ機構を常設します。"
+      },
+      {
+        heading: "2. 【顧客側DR構成図】ダウンタイム0秒を実現するマルチCDNフェイルオーバー",
+        diagramHtml: `
+          <div style="background:#f7f9fa; border:1.5px solid #cfd9de; border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+            <div style="text-align:center; font-size:0.8rem; font-weight:800; color:#0f1419;">
+              インテリジェントDNS (Traffic Director / Route53) による動的振り分け
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr auto 1fr; gap:10px; align-items:center;">
+              <div style="background:#fff5f5; border:1.5px dashed #f4212e; border-radius:8px; padding:8px; text-align:center;">
+                <div style="font-size:0.75rem; font-weight:800; color:#f4212e;">Primary CDN (Cloudflare)</div>
+                <div style="font-size:0.7rem; color:#f4212e; margin-top:2px;">5xxエラー急増を自動検知 💥</div>
+                <div style="font-size:0.68rem; background:#f4212e; color:#fff; padding:2px; border-radius:4px; margin-top:4px;">自動切り離し</div>
+              </div>
+              <div style="font-size:1.4rem; color:#00ba7c; font-weight:900;">➔ 切替 ➔</div>
+              <div style="background:#f0fdf4; border:1.5px solid #00ba7c; border-radius:8px; padding:8px; text-align:center;" class="pulse-green">
+                <div style="font-size:0.75rem; font-weight:800; color:#00ba7c;">Secondary CDN (Fastly / AWS)</div>
+                <div style="font-size:0.7rem; color:#00ba7c; margin-top:2px;">正常稼働中 🟢</div>
+                <div style="font-size:0.68rem; background:#00ba7c; color:#fff; padding:2px; border-radius:4px; margin-top:4px; font-weight:800;">100% トラフィック引継ぎ</div>
+              </div>
+            </div>
+            <div style="text-align:center; font-size:0.75rem; font-weight:700; color:#536471;">
+              OpenAIやSpotifyなどのWebサービスは、Cloudflare障害時でもダウンタイム「0秒」で継続可能
+            </div>
+          </div>
+        `,
+        text: "単一のCDNや認証基盤への過度な依存を避け、DNSレイヤーでのマルチCDNフェイルオーバーを組むことで、インフラ事業者の大規模障害を無効化できます。"
+      },
+      {
+        heading: "3. 【ダウンタイム比較グラフ】復旧所要時間の比較",
+        diagramHtml: `
+          <div class="diagram-barchart-container">
+            <div class="barchart-item">
+              <div class="barchart-label-row">
+                <span>手動特定・全PoPロールバック（今回の実績）</span>
+                <span style="color:#f4212e; font-weight:900;">約 5.5 時間 ❌</span>
+              </div>
+              <div class="barchart-track">
+                <div class="barchart-fill danger" style="width: 100%;">約5.5時間（世界的大混乱）</div>
+              </div>
+            </div>
+
+            <div class="barchart-item">
+              <div class="barchart-label-row">
+                <span>機能単位キルスイッチによるバイパス</span>
+                <span style="color:#f59e0b; font-weight:900;">約 3 秒 ⚡</span>
+              </div>
+              <div class="barchart-track">
+                <div class="barchart-fill primary" style="width: 15%;">約3秒（コア通信維持）</div>
+              </div>
+            </div>
+
+            <div class="barchart-item">
+              <div class="barchart-label-row">
+                <span>マルチCDN DNS自動フェイルオーバー</span>
+                <span style="color:#00ba7c; font-weight:900;">0 秒 （ダウンタイムなし） ⭕</span>
+              </div>
+              <div class="barchart-track">
+                <div class="barchart-fill success" style="width: 5%;">0秒</div>
+              </div>
+            </div>
+          </div>
+        `,
+        text: "障害をゼロにすることは不可能でも、キルスイッチとマルチCDN多重化によりダウンタイムを「数時間から数秒・ゼロ」へ圧縮できます。"
+      }
+    ],
+    keyPoints: [
+      { label: "キルスイッチ", val: "部分的な異常がコアプロキシを巻き込まない緊急バイパスの徹底" },
+      { label: "マルチCDN", val: "単一プロバイダ全滅時でもサービス継続を保証するDR設計" },
+      { label: "フェイルオーバー速度", val: "数時間の停止から数秒・ゼロへの劇的短縮" }
+    ]
+  },
+  "sre-lessons": {
+    badge: "SRE運用教訓総合資料",
+    badgeType: "primary",
+    title: "SRE・大規模分散インフラが学ぶべき3大教訓（総合図解）",
+    subtitle: "内部生成データの厳格検証、監視の完全独立性、機能単位キルスイッチ",
+    sections: [
+      {
+        heading: "1. 教訓01：内部生成データへの「ゼロトラスト検証」（検問ゲート）",
+        diagramHtml: `
+          <div class="diagram-pipeline-flow">
+            <div class="pipeline-node gatekeeper">
+              <div class="pipeline-node-icon">🔍</div>
+              <div class="pipeline-node-title">CI/CD検問ゲート</div>
+              <div class="pipeline-node-desc">行数・スキーマ自動検証</div>
+            </div>
+            <div class="pipeline-connector blocked-cross">⛔ 遮断!</div>
+            <div class="pipeline-node protected">
+              <div class="pipeline-node-icon">🌐</div>
+              <div class="pipeline-node-title">335都市PoP防衛</div>
+              <div class="pipeline-node-desc">全PoPクラッシュ抑止</div>
+            </div>
+          </div>
+        `,
+        text: "内部自動生成ファイルも外部入力と同様に扱い、スキーマ検証・行数リミットを常時チェック。"
+      },
+      {
+        heading: "2. 教訓02：監視・ステータスインフラの「完全独立性」（共倒れ撲滅）",
+        diagramHtml: `
+          <div class="diagram-compare-container">
+            <div class="compare-box before" style="padding:8px 10px;">
+              <span class="compare-box-title" style="font-size:0.75rem;">❌ 自社依存: 500エラー</span>
+            </div>
+            <div class="compare-box after" style="padding:8px 10px;">
+              <span class="compare-box-title" style="font-size:0.75rem;">🛡️ 外部独立: 100% 稼働 🟢</span>
+            </div>
+          </div>
+        `,
+        text: "ステータスページとアラート網は自社CDN外の別クラウド（AWS/GCP等）で運用。"
+      },
+      {
+        heading: "3. 教訓03：秒速で機能を切り離す「キルスイッチ」＆ マルチCDN",
+        diagramHtml: `
+          <div class="diagram-circuit-container" style="padding:10px 12px;">
+            <div class="circuit-path-row bypass" style="padding:6px 10px;">
+              <span class="circuit-tag green">⚡ キルスイッチ作動</span>
+              <div class="circuit-nodes" style="font-size:0.72rem;">
+                <span>Bot異常を即バイパス ➔ プロキシ通信は100%正常継続 🚀</span>
+              </div>
+            </div>
+          </div>
+        `,
+        text: "異常発生時に即座にモジュールを切り離すバイパス回路と、顧客側のマルチCDN二重化。"
+      }
+    ],
+    keyPoints: [
+      { label: "教訓1: 内部ゼロトラスト", val: "自動生成設定ファイルも厳格なサイズ・スキーマ検証を実施" },
+      { label: "教訓2: 監視の独立", val: "ステータスページは自社インフラ外の独立環境でホスト" },
       { label: "教訓3: キルスイッチ", val: "部分的な異常がコアプロキシを巻き込まない緊急バイパスの徹底" }
     ]
   }

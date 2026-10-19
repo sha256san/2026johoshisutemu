@@ -3102,12 +3102,19 @@ html, body {
   background: #ffffff;
   border: 2px solid #00ba7c;
   border-radius: var(--radius-md);
-  padding: 18px 16px;
+  padding: 16px 14px;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   position: relative;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.lesson-infographic-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 186, 124, 0.18);
+  border-color: #009664;
 }
 
 .lesson-diagram-mini {
@@ -3122,7 +3129,401 @@ html, body {
   font-weight: 700;
   color: #0f1419;
   border: 1px solid var(--border-color);
-  margin: 6px 0;
+  margin: 4px 0;
+}
+
+/* ==========================================================================
+   教訓詳細資料（Lesson Materials）専用ビジュアル・図解・グラフスタイル
+   「題名」の直下に配置される本格ダイアグラム・アニメーション
+   ========================================================================== */
+.material-diagram-wrapper {
+  margin: 10px 0 16px 0;
+  background: #ffffff;
+  border: 1.5px solid #cfd9de;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 3px 12px rgba(15, 20, 25, 0.05);
+}
+
+/* 1. Before vs After 比較ダイアグラム */
+.diagram-compare-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.compare-box {
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.compare-box.before {
+  background: #fff5f5;
+  border: 1.5px dashed #f4212e;
+}
+
+.compare-box.after {
+  background: #f0fdf4;
+  border: 2px solid #00ba7c;
+}
+
+.compare-box-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding-bottom: 6px;
+}
+
+.compare-box-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.compare-box.before .compare-box-title {
+  color: #f4212e;
+}
+
+.compare-box.after .compare-box-title {
+  color: #00ba7c;
+}
+
+.compare-box-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  letter-spacing: 0.03em;
+}
+
+.compare-box.before .compare-box-badge {
+  background: rgba(244, 33, 46, 0.12);
+  color: #f4212e;
+}
+
+.compare-box.after .compare-box-badge {
+  background: rgba(0, 186, 124, 0.12);
+  color: #00ba7c;
+}
+
+/* フロー行 */
+.compare-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.compare-step-node {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.compare-arrow-down {
+  text-align: center;
+  font-size: 0.85rem;
+  line-height: 1;
+  color: #536471;
+}
+
+.compare-result-pill {
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.compare-box.before .compare-result-pill {
+  background: #f4212e;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(244, 33, 46, 0.25);
+}
+
+.compare-box.after .compare-result-pill {
+  background: #00ba7c;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 186, 124, 0.25);
+}
+
+/* 2. アニメーション付き グラフ・バーチャート */
+.diagram-barchart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.barchart-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.barchart-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0f1419;
+}
+
+.barchart-track {
+  width: 100%;
+  height: 22px;
+  background: #eff3f4;
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.barchart-fill {
+  height: 100%;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #ffffff;
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.barchart-fill.danger {
+  background: linear-gradient(90deg, #f4212e, #ff6b75);
+}
+
+.barchart-fill.success {
+  background: linear-gradient(90deg, #00ba7c, #2ee59d);
+  box-shadow: 0 0 12px rgba(0, 186, 124, 0.4);
+}
+
+.barchart-fill.primary {
+  background: linear-gradient(90deg, #1d9bf0, #60c5ff);
+}
+
+/* 3. パイプライン・検問ゲート（CI/CD Gatekeeper）図解 */
+.diagram-pipeline-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 4px;
+  overflow-x: auto;
+}
+
+.pipeline-node {
+  flex: 1;
+  min-width: 120px;
+  background: #f7f9fa;
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  position: relative;
+}
+
+.pipeline-node.gatekeeper {
+  background: #fff9e6;
+  border: 2px dashed #f59e0b;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+}
+
+.pipeline-node.blocked {
+  background: #fff5f5;
+  border: 2px solid #f4212e;
+}
+
+.pipeline-node.protected {
+  background: #f0fdf4;
+  border: 2px solid #00ba7c;
+}
+
+.pipeline-node-icon {
+  font-size: 1.3rem;
+  margin-bottom: 2px;
+}
+
+.pipeline-node-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #0f1419;
+}
+
+.pipeline-node-desc {
+  font-size: 0.7rem;
+  color: #536471;
+  margin-top: 2px;
+}
+
+.pipeline-connector {
+  color: #1d9bf0;
+  font-weight: 900;
+  font-size: 1.1rem;
+}
+
+.pipeline-connector.blocked-cross {
+  color: #f4212e;
+  font-size: 1.3rem;
+}
+
+/* 4. メーター・サイズ制限ゲージ */
+.diagram-meter-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.meter-track-wrapper {
+  position: relative;
+  height: 28px;
+  background: #e1e8ed;
+  border-radius: 6px;
+  overflow: visible;
+  margin: 18px 0 10px 0;
+}
+
+.meter-fill-normal {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 45%;
+  background: #00ba7c;
+  border-radius: 6px 0 0 6px;
+}
+
+.meter-fill-over {
+  position: absolute;
+  left: 45%;
+  top: 0;
+  height: 100%;
+  width: 55%;
+  background: repeating-linear-gradient(
+    45deg,
+    #f4212e,
+    #f4212e 10px,
+    #d31b27 10px,
+    #d31b27 20px
+  );
+  border-radius: 0 6px 6px 0;
+  animation: meterStripeAnim 1.2s linear infinite;
+}
+
+.meter-limit-line {
+  position: absolute;
+  left: 45%;
+  top: -12px;
+  bottom: -12px;
+  width: 3px;
+  background: #0f1419;
+  z-index: 10;
+}
+
+.meter-limit-label {
+  position: absolute;
+  top: -24px;
+  left: 45%;
+  transform: translateX(-50%);
+  background: #0f1419;
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* 5. キルスイッチ緊急バイパス回路図 */
+.diagram-circuit-container {
+  background: #0f1419;
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.circuit-path-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.circuit-path-row.normal {
+  background: rgba(244, 33, 46, 0.15);
+  border-color: #f4212e;
+}
+
+.circuit-path-row.bypass {
+  background: rgba(0, 186, 124, 0.15);
+  border-color: #00ba7c;
+  box-shadow: 0 0 16px rgba(0, 186, 124, 0.2);
+}
+
+.circuit-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.circuit-tag.red {
+  background: #f4212e;
+  color: #fff;
+}
+
+.circuit-tag.green {
+  background: #00ba7c;
+  color: #fff;
+}
+
+.circuit-nodes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* 独立パルス光アニメーション */
+@keyframes pulseGreenGlow {
+  0% { box-shadow: 0 0 0 0 rgba(0, 186, 124, 0.6); }
+  70% { box-shadow: 0 0 0 10px rgba(0, 186, 124, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 186, 124, 0); }
+}
+
+.pulse-green {
+  animation: pulseGreenGlow 2s infinite;
 }
 
 /* ==========================================================================

@@ -731,20 +731,23 @@ class SlideDeckApp {
         </div>
       `;
     } else if (s.lessons || s.themeType === 'lessons-grid') {
-      // Slide 14: 総括と教訓 - 3大教訓ミニカード
+      // Slide 14: 総括と教訓 - 3大教訓「題名＋ミニ図」カード
       bodyHtml = `
-        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; background:#ffffff; border:1.5px solid #00ba7c; border-radius:10px; padding:10px 12px;">
-          <div style="text-align:center;">
-            <div style="font-weight:900; color:#00ba7c; font-size:0.85rem;">01</div>
-            <div style="font-size:0.7rem; font-weight:800; color:#0f1419;">バタフライ効果</div>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; background:#ffffff; border:1.5px solid #00ba7c; border-radius:10px; padding:10px 12px;">
+          <div style="background:#f7f9fa; border-radius:6px; padding:6px 4px; text-align:center; border:1px solid #e1e8ed;">
+            <div style="font-weight:900; color:#00ba7c; font-size:0.8rem;">教訓 01</div>
+            <div style="font-size:0.68rem; font-weight:800; color:#0f1419; margin:2px 0;">内部ゼロトラスト</div>
+            <div style="font-size:0.65rem; background:#fff; border-radius:4px; padding:2px; border:1px dashed #f59e0b; color:#b45309; font-weight:700;">🔍 検問ゲート</div>
           </div>
-          <div style="text-align:center;">
-            <div style="font-weight:900; color:#00ba7c; font-size:0.85rem;">02</div>
-            <div style="font-size:0.7rem; font-weight:800; color:#0f1419;">監視の独立性</div>
+          <div style="background:#f7f9fa; border-radius:6px; padding:6px 4px; text-align:center; border:1px solid #e1e8ed;">
+            <div style="font-weight:900; color:#00ba7c; font-size:0.8rem;">教訓 02</div>
+            <div style="font-size:0.68rem; font-weight:800; color:#0f1419; margin:2px 0;">監視の完全独立</div>
+            <div style="font-size:0.65rem; background:#fff; border-radius:4px; padding:2px; border:1px solid #00ba7c; color:#00ba7c; font-weight:700;">🛡️ 外部Status</div>
           </div>
-          <div style="text-align:center;">
-            <div style="font-weight:900; color:#00ba7c; font-size:0.85rem;">03</div>
-            <div style="font-size:0.7rem; font-weight:800; color:#0f1419;">マルチCDN</div>
+          <div style="background:#f7f9fa; border-radius:6px; padding:6px 4px; text-align:center; border:1px solid #e1e8ed;">
+            <div style="font-weight:900; color:#00ba7c; font-size:0.8rem;">教訓 03</div>
+            <div style="font-size:0.68rem; font-weight:800; color:#0f1419; margin:2px 0;">キルスイッチ＆DR</div>
+            <div style="font-size:0.65rem; background:#fff; border-radius:4px; padding:2px; border:1px solid #1d9bf0; color:#1d9bf0; font-weight:700;">⚡ 迂回バイパス</div>
           </div>
         </div>
       `;
@@ -1410,21 +1413,49 @@ class SlideDeckApp {
         </div>
       `;
     } else if (s.themeType === 'lessons-grid') {
-      // Slide 14: 総括と教訓 - 3大教訓アーキテクチャ図解カード
+      // Slide 14: 総括と教訓 - 3大教訓「題名＋図」アーキテクチャ図解カード
       visualHtml = `
         <div class="lessons-infographic-grid">
           ${s.lessons.map(ls => `
-            <div class="lesson-infographic-card ${ls.materialId ? 'has-material-interactive' : ''}" ${ls.materialId ? `data-material-id="${ls.materialId}" title="タッチしてSRE教訓詳細資料を表示"` : ''}>
+            <div class="lesson-infographic-card ${ls.materialId ? 'has-material-interactive' : ''}" ${ls.materialId ? `data-material-id="${ls.materialId}" title="タッチして「${ls.title}」詳細図解資料を表示"` : ''}>
               <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:1.6rem; font-weight:900; color:#00ba7c;">${ls.num}</span>
-                <span style="font-size:1.2rem;">${ls.num === '01' ? '🦋' : ls.num === '02' ? '☁️' : '🌐'}</span>
+                <span style="font-size:1.5rem; font-weight:900; color:#00ba7c;">${ls.num}</span>
+                <span style="font-size:1.1rem;">${ls.num === '01' ? '🔍' : ls.num === '02' ? '🛡️' : '⚡'}</span>
               </div>
-              <h4 style="font-size:1.05rem; font-weight:800; color:#0f1419; margin-bottom:2px;">${ls.title}</h4>
-              <div class="lesson-diagram-mini">
-                ${ls.num === '01' ? '小変更 (DB権限) ➔ 全体停止 💥' : ls.num === '02' ? '自社インフラ ⚡ 別系統Status 🛡️' : 'Client ➔ CDN A / CDN B (多重化)'}
+              <h4 style="font-size:0.98rem; font-weight:800; color:#0f1419; margin-bottom:0;">${ls.title}</h4>
+              
+              <!-- 題名の直下に配置する図解（ビジュアル回路・ダイアグラム） -->
+              <div class="lesson-diagram-mini" style="flex-direction:column; gap:4px; padding:10px 8px;">
+                ${ls.num === '01' ? `
+                  <div style="font-size:0.72rem; color:#536471; font-weight:700;">【CI/CD 検問ゲート】</div>
+                  <div style="display:flex; align-items:center; justify-content:center; gap:6px; font-size:0.75rem; width:100%;">
+                    <span style="background:#fff; border:1px solid #cfd9de; border-radius:4px; padding:2px 6px;">クエリ400行</span>
+                    <span style="color:#f59e0b; font-weight:900;">➔ ⛔</span>
+                    <span style="background:#e8f5e9; border:1px solid #00ba7c; border-radius:4px; padding:2px 6px; color:#00ba7c; font-weight:800;">335都市保護</span>
+                  </div>
+                ` : ls.num === '02' ? `
+                  <div style="font-size:0.72rem; color:#536471; font-weight:700;">【共倒れ防止・外部Status】</div>
+                  <div style="display:flex; align-items:center; justify-content:center; gap:6px; font-size:0.75rem; width:100%;">
+                    <span style="background:#fff5f5; border:1px solid #f4212e; border-radius:4px; padding:2px 6px; color:#f4212e;">自社 500💥</span>
+                    <span style="color:#536471;">vs</span>
+                    <span style="background:#e8f5e9; border:1.5px solid #00ba7c; border-radius:4px; padding:2px 6px; color:#00ba7c; font-weight:800;" class="pulse-green">外部Status 100% 🟢</span>
+                  </div>
+                ` : `
+                  <div style="font-size:0.72rem; color:#536471; font-weight:700;">【バイパス回路 ＆ マルチCDN】</div>
+                  <div style="display:flex; align-items:center; justify-content:center; gap:6px; font-size:0.75rem; width:100%;">
+                    <span style="background:#fff; border:1px solid #cfd9de; border-radius:4px; padding:2px 6px;">Bot異常 ⚡</span>
+                    <span style="color:#00ba7c; font-weight:900;">➔ [迂回] ➔</span>
+                    <span style="background:#e8f5e9; border:1px solid #00ba7c; border-radius:4px; padding:2px 6px; color:#00ba7c; font-weight:800;">通信継続 🚀</span>
+                  </div>
+                `}
               </div>
-              <p style="font-size:0.85rem; color:#536471; line-height:1.45;">${ls.text}</p>
-              ${ls.materialId ? '<div class="material-touch-hint" style="margin-top:auto;">教訓解説資料</div>' : ''}
+
+              ${ls.materialId ? `
+                <div class="material-touch-hint" style="margin-top:auto; font-size:0.75rem; padding:4px 8px; background:#eff3f4; border-radius:6px; text-align:center; color:#1d9bf0; font-weight:700; display:flex; align-items:center; justify-content:center; gap:4px;">
+                  <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                  <span>詳細図解・グラフ資料を表示</span>
+                </div>
+              ` : ''}
             </div>
           `).join('')}
         </div>
@@ -1543,6 +1574,11 @@ class SlideDeckApp {
               <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:#1d9bf0;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
               <span>${sec.heading}</span>
             </h4>
+            ${sec.diagramHtml ? `
+              <div class="material-diagram-wrapper">
+                ${sec.diagramHtml}
+              </div>
+            ` : ''}
             ${sec.text ? `<p class="material-section-text">${sec.text}</p>` : ''}
             ${sec.cards ? `
               <div class="material-cards-grid">
